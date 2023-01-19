@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="udp-server.cpp" />
+    <ClCompile Include="_commands.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="udp-packet.cpp" />
+    <ClCompile Include="udp-user.cpp" />
+    <ClCompile Include="_functions.cpp" />
+    <ClCompile Include="cmd-handler.cpp">
+      <Filter>handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="chat-handler.cpp">
+      <Filter>handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="md5.cpp">
+      <Filter>external</Filter>
+    </ClCompile>
+    <ClCompile Include="log.cpp">
+      <Filter>external</Filter>
+    </ClCompile>
+    <ClCompile Include="udp-cryptor.cpp" />
+    <ClCompile Include="mysql.cpp">
+      <Filter>external</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="main.h" />
+    <ClInclude Include="udp-user.h" />
+    <ClInclude Include="udp-packet.h" />
+    <ClInclude Include="udp-server.h" />
+    <ClInclude Include="chat-handler.h">
+      <Filter>handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="cmd-handler.h">
+      <Filter>handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="md5.h">
+      <Filter>external</Filter>
+    </ClInclude>
+    <ClInclude Include="log.h">
+      <Filter>external</Filter>
+    </ClInclude>
+    <ClInclude Include="udp-cryptor.h" />
+    <ClInclude Include="mysql.h">
+      <Filter>external</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="handlers">
+      <UniqueIdentifier>{1860317b-2732-40d3-9427-f2f4f9c698cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external">
+      <UniqueIdentifier>{913dcf28-d34a-4017-9682-eaba80889691}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
