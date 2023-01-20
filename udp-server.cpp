@@ -212,21 +212,6 @@ void udpserver_t::Broadcast(packet_t* packet, int level)
 	}
 }
 
-void udpserver_t::AddChatGlobal(id_t id, color_t color, const char* fmt, ...)
-{
-	char buf[512];
-
-	va_list va;
-	va_start(va, fmt);
-	int count = vsnprintf(buf, 512, fmt, va);
-	va_end(va);
-
-	if (count < 0) return;
-	if (count > 512) count = 512;
-
-	chat.push(entry_t(id, color, buf, 1));
-}
-
 void udpserver_t::AddEventGlobal(const std::string& text)
 {
 	packet_t packet(id_event);
@@ -234,9 +219,10 @@ void udpserver_t::AddEventGlobal(const std::string& text)
 	Broadcast(&packet);
 }
 
-void udpserver_t::KickUser(user_t* user)
+void udpserver_t::KickUser(user_t* user, bool send_closed)
 {
-	user->send_kicked();
+	if (send_closed)
+		user->send_kicked();
 	m_free.push_back(user->m_udpid);
 }
 
@@ -259,6 +245,7 @@ void udpserver_t::SendPM(user_t* src, user_t* dst, const char* message)
 	dst->AddChat(0xFFF7F488, "[%s >> Я] {ffffff}%s", src->m_nick.c_str(), message);
 	src->m_xid = dst->m_id;
 	dst->m_xid = src->m_id;
+	dst->send_notify();
 }
 
 void udpserver_t::NotifyAll(int level)

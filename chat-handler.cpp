@@ -74,3 +74,27 @@ void chat_handler_t::send(const entry_t& entry)
 	server.Broadcast(&out, entry.m_status);
 	server.NotifyAll(entry.m_status);
 }
+
+void chat_handler_t::pushf(int status, id_t id, color_t color, const char* fmt, ...)
+{
+	va_list va;
+	char buf[1024];
+
+	va_start(va, fmt);
+	vsnprintf(buf, 1024, fmt, va);
+	va_end(va);
+
+	push(entry_t(id, color, buf, status));
+}
+
+void chat_handler_t::sendf(int status, id_t id, color_t color, const char* fmt, ...)
+{
+	va_list va;
+	char buf[1024];
+
+	va_start(va, fmt);
+	vsnprintf(buf, 1024, fmt, va);
+	va_end(va);
+
+	send(entry_t(id, color, buf, status));
+}

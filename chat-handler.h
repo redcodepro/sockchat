@@ -30,4 +30,7 @@ public:
 
 	void		push(const entry_t& entry);
 	void		send(const entry_t& entry);
+
+	void		pushf(int status, id_t id, color_t color, const char* fmt, ...);
+	void		sendf(int status, id_t id, color_t color, const char* fmt, ...);
 };

@@ -81,12 +81,12 @@ void cmd_time(user_t* user)
 
 void cmd_me(user_t* user, const char* text)
 {
-	server.AddChatGlobal(user->m_id, user->m_color, "%s {ff99ff}%s", user->nick(), format_out(text).c_str());
+	chat.pushf(1, user->m_id, user->m_color, "%s {ff99ff}%s", user->nick(), format_out(text).c_str());
 }
 
 void cmd_do(user_t* user, const char* text)
 {
-	server.AddChatGlobal(user->m_id, 0xFF4682B4, "%s - | %s", format_out(text).c_str(), user->nick_c());
+	chat.pushf(1, user->m_id, 0xFF4682B4, "%s - | %s", format_out(text).c_str(), user->nick_c());
 }
 
 void cmd_exit(user_t* user)
@@ -98,7 +98,7 @@ void cmd_clear(user_t* user)
 {
 	chat.clear();
 	server.AddEventGlobal("erase");
-	server.AddChatGlobal(0, 0xFFF02E2E, "Чат очищен администратором.");
+	chat.pushf(0, 0, 0xFFF02E2E, "Чат очищен администратором.");
 }
 
 void cmd_update(user_t* user)
@@ -181,7 +181,7 @@ void cmd_kick(user_t* user, int id, const char* reason)
 		return;
 
 	server.KickUser(usr);
-	server.AddChatGlobal(user->m_id, 0xFFFF6347, "Модератор %s {ff6347}кикнул %s{ff6347}. Причина: {ffffff}%s", user->nick_c(), usr->nick_c(), reason);
+	chat.pushf(1, user->m_id, 0xFFFF6347, "Модератор %s {ff6347}кикнул %s{ff6347}. Причина: {ffffff}%s", user->nick_c(), usr->nick_c(), reason);
 }
 
 void cmd_skick(user_t* user, int id)
@@ -201,7 +201,7 @@ void cmd_ban(user_t* user, int id, const char* reason)
 		return;
 
 	server.MakeBan(usr);
-	server.AddChatGlobal(user->m_id, 0xFFFF6347, "Модератор %s {ff6347}забанил %s{ff6347}. Причина: {ffffff}%s", user->nick_c(), usr->nick_c(), reason);
+	chat.pushf(1, user->m_id, 0xFFFF6347, "Модератор %s {ff6347}забанил %s{ff6347}. Причина: {ffffff}%s", user->nick_c(), usr->nick_c(), reason);
 }
 
 void cmd_banip(user_t* user, int id, const char* reason)
@@ -211,7 +211,7 @@ void cmd_banip(user_t* user, int id, const char* reason)
 		return;
 
 	server.MakeBanIP(usr);
-	server.AddChatGlobal(user->m_id, 0xFFCC1F00, "Модератор %s {ff6347}забанил %s{cc1f00}. Причина: {ffffff}%s", user->nick_c(), usr->nick_c(), reason);
+	chat.pushf(1, user->m_id, 0xFFCC1F00, "Модератор %s {ff6347}забанил %s{cc1f00}. Причина: {ffffff}%s", user->nick_c(), usr->nick_c(), reason);
 }
 
 void cmd_destroy(user_t* user, int id)
@@ -290,23 +290,17 @@ void cmd_hideme(user_t* user)
 
 void cmd_chat_vip(user_t* user, const char* text)
 {
-	char buf[256];
-	snprintf(buf, 256, "[VIP] %s{ffffff}: %s", user->nick_c(), text);
-	chat.push(entry_t(user->m_id, 0xFF8B61FF, buf, 2));
+	chat.pushf(2, user->m_id, 0xFF8B61FF, "[VIP] %s{ffffff}: %s", user->nick_c(), text);
 }
 
 void cmd_chat_adm(user_t* user, const char* text)
 {
-	char buf[256];
-	snprintf(buf, 256, "[A] %s{a6e300}: %s", user->nick_c(), text);
-	chat.push(entry_t(user->m_id, 0xFFA6E300, buf, 3));
+	chat.pushf(3, user->m_id, 0xFFA6E300, "[A] %s{a6e300}: %s", user->nick_c(), text);
 }
 
 void cmd_chat_all(user_t* user, const char* text)
 {
-	char buf[256];
-	snprintf(buf, 256, "[G] %s{ffe500}: %s", user->nick_c(), text);
-	chat.push(entry_t(user->m_id, 0xFFFFE500, buf, 0));
+	chat.pushf(0, user->m_id, 0xFFFFE500, "[G] %s{ffe500}: %s", user->nick_c(), text);
 }
 
 void cmd_notify(user_t* user)

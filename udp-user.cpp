@@ -153,7 +153,7 @@ void user_t::OnConnect()
 	chat.send_history(this);
 
 	if (m_status < 4)
-		server.AddChatGlobal(m_id, m_color, "%s {f7f488}подключился", nick());
+		chat.sendf(1, m_id, m_color, "%s {f7f488}подключился", nick());
 }
 
 void user_t::OnDisconnect()
@@ -162,7 +162,7 @@ void user_t::OnDisconnect()
 		return;
 
 	if (m_status < 4)
-		server.AddChatGlobal(m_id, m_color, "%s {f7f488}отключислся", nick());
+		chat.sendf(1, m_id, m_color, "%s {f7f488}отключислся", nick());
 }
 
 void user_t::OnAuth(const std::string& key)
@@ -199,7 +199,7 @@ void user_t::OnPacket(packet_t* packet)
 	switch (packet->id)
 	{
 	case id_conn_closed:
-		server.KickUser(this);
+		server.KickUser(this, false);
 		break;
 	case id_user_auth:
 		OnAuth(packet->ReadString());
@@ -236,10 +236,9 @@ void user_t::OnChat(const std::string& text)
 		return;
 
 	std::string out = format_out(text, (m_status < 2));
-	if (out.size() == 0)
-		return;
 	
-	server.AddChatGlobal(m_id, m_color, "%s{ffffff}: %s", nick(), out.c_str());
+	if (!out.empty())
+		chat.pushf(1, m_id, m_color, "%s{ffffff}: %s", nick(), out.c_str());
 }
 
 void user_t::OnCommand(const std::string& text)
@@ -282,7 +281,7 @@ void user_t::set_nick(const std::string& nick)
 void user_t::set_prefix(const std::string& prefix)
 {
 	m_prefix = prefix;
-	db.set_nick(m_id, m_prefix);
+	db.set_prefix(m_id, m_prefix);
 	user_t::udn();
 }
 

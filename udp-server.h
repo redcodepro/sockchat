@@ -47,9 +47,8 @@ public:
 	//////////////////////////////////////////
 
 	void Broadcast(packet_t* packet, int level = 0);
-	void AddChatGlobal(id_t id, color_t color, const char* fmt, ...);
 	void AddEventGlobal(const std::string& text);
-	void KickUser(user_t* user);
+	void KickUser(user_t* user, bool send_closed = true);
 	void MakeBan(user_t* user);
 	void MakeBanIP(user_t* user);
 	void SendPM(user_t* src, user_t* dst, const char* message);
