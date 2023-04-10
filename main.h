@@ -59,6 +59,15 @@ namespace std {
 	};
 }
 
+struct userdata_t
+{
+	int			m_id;
+	std::string m_nick;
+	int			m_color;
+	std::string m_prefix;
+	int         m_status;
+};
+
 #include "udp-packet.h"
 #include "mysql.h"
 #include "udp-cryptor.h"

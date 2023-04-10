@@ -9,7 +9,7 @@ void user_t::udn()
 	server.on_udn();
 }
 
-void user_t::login(mysql_user_t* ud)
+void user_t::login(userdata_t* ud)
 {
 	if (ud->m_status == 0)
 	{
@@ -174,7 +174,7 @@ void user_t::OnAuth(const std::string& key)
 
 	if (key_is_valid(key))
 	{
-		mysql_user_t ud;
+		userdata_t ud;
 		if (db.restore_user(key, &ud))
 		{
 			login(&ud);

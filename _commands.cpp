@@ -23,7 +23,7 @@ void cmd_register(user_t* user, const char* nick, const char* pass)
 	int id = db.add_user(nick, md5(pass));
 	if (id != -1)
 	{
-		mysql_user_t ud;
+		userdata_t ud;
 		if (db.load_user(id, &ud))
 			user->login(&ud);
 	}
@@ -44,7 +44,7 @@ void cmd_auth(user_t* user, const char* nick, const char* pass)
 		return;
 	}
 
-	mysql_user_t ud;
+	userdata_t ud;
 	if (!db.auth_user(id, md5(pass), &ud))
 	{
 		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Пароль неправильный!");

@@ -4,15 +4,6 @@
 #include <mysql_connection.h>
 #include <cppconn/statement.h>
 
-struct mysql_user_t
-{
-	int			m_id;
-	std::string m_nick;
-	int			m_color;
-	std::string m_prefix;
-	int         m_status;
-};
-
 class mysql_t
 {
 private:
@@ -29,9 +20,9 @@ public:
 
 	int  add_user(const std::string& nick, const std::string& pass);
 	int  find_user(const std::string& nick);
-	bool load_user(int id, mysql_user_t* data);
-	bool auth_user(int id, const std::string& pass, mysql_user_t* data);
-	bool restore_user(const std::string& restore, mysql_user_t* data);
+	bool load_user(int id, userdata_t* data);
+	bool auth_user(int id, const std::string& pass, userdata_t* data);
+	bool restore_user(const std::string& restore, userdata_t* data);
 
 	void set_nick(int id, const std::string& nick);
 	void set_color(int id, unsigned int color);

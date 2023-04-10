@@ -29,7 +29,7 @@ public:
 
 	void udn(); // update display name
 
-	void login(mysql_user_t* ud);
+	void login(userdata_t* ud);
 	void logout();
 
 	void send_ping();

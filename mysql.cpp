@@ -65,7 +65,7 @@ int mysql_t::find_user(const std::string& nick)
 	return res->next() ? res->getInt(1) : -1;
 }
 
-bool mysql_t::load_user(int id, mysql_user_t* data)
+bool mysql_t::load_user(int id, userdata_t* data)
 {
 	query("select * from `users` where `id`='%u';", id);
 
@@ -82,7 +82,7 @@ bool mysql_t::load_user(int id, mysql_user_t* data)
 	return true;
 }
 
-bool mysql_t::auth_user(int id, const std::string& pass, mysql_user_t* data)
+bool mysql_t::auth_user(int id, const std::string& pass, userdata_t* data)
 {
 	query("select 1 from `auth` where `id`='%d' and `password`='%s';", id, pass.c_str());
 
@@ -90,7 +90,7 @@ bool mysql_t::auth_user(int id, const std::string& pass, mysql_user_t* data)
 	return res->next() ? load_user(id, data) : false;
 }
 
-bool mysql_t::restore_user(const std::string& restore, mysql_user_t* data)
+bool mysql_t::restore_user(const std::string& restore, userdata_t* data)
 {
 	query("select `id` from `auth` where `restore`='%s';", restore.c_str());
 
