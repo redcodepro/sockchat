@@ -2,7 +2,7 @@
 
 void logger_t::begin(const char* filename)
 {
-	if (m_fs == nullptr)
+	if (m_fs == nullptr && filename != nullptr)
 		m_fs = fopen(filename, "a");
 	if (m_fs == nullptr)
 		m_fs = stdout;

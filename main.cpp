@@ -1,24 +1,28 @@
 ﻿#include "main.h" // ÙŦF-8
 
-#define UDP_ADDRESS "0.0.0.0"
-#define UDP_PORT	7777
-
-#define DB_ADDRESS	"localhost"
-#define DB_USER		"sockchat"
-#define DB_PASSWORD	"uxQZnTp2"
-#define DB_SCHEMA	"sockchat"
-
-mysql_t			db;
+database_t		db;
 udpserver_t		server;
 cmd_handler_t	cmds;
 chat_handler_t	chat;
 
 int main(int argc, char* argv[])
 {
+	if (argc > 2 && !strcmp(argv[1], "-l"))
+		_g_log.begin(argv[2]);
+	else
+		_g_log.begin(nullptr);
+
 	_printf("[info] Sockchat/UDP v1.1 started");
 
-	if (!db.init(DB_ADDRESS, DB_USER, DB_PASSWORD, DB_SCHEMA))
+#if (MYSQL_ENABLED == 1)
+	if (!db.init(MYSQL_ADDRESS, MYSQL_USER, MYSQL_PASSWORD, MYSQL_SCHEMA))
+#else
+	if (!db.init(SQLITE_FILENAME))
+#endif
+	{
+		_printf("[error] Failed to init database.");
 		return 1;
+	}
 
 	if (!server.bind(UDP_ADDRESS, UDP_PORT))
 		return 2;

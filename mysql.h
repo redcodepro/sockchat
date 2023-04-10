@@ -1,5 +1,7 @@
 #include "main.h"
 
+#if (MYSQL_ENABLED == 1)
+
 #include <mysql_driver.h>
 #include <mysql_connection.h>
 #include <cppconn/statement.h>
@@ -38,3 +40,7 @@ public:
 
 	sql::SQLString escape_string(const sql::SQLString& in);
 };
+
+typedef mysql_t database_t;
+
+#endif

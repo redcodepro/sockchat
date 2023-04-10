@@ -19,6 +19,8 @@
 #include <stdarg.h>
 #include <memory.h>
 
+#include "config.h"
+
 #include "md5.h"
 #include "log.h"
 
@@ -76,7 +78,7 @@ struct userdata_t
 #include "cmd-handler.h"
 #include "chat-handler.h"
 
-extern mysql_t db;
+extern database_t db;
 extern udpserver_t server;
 extern cmd_handler_t cmds;
 extern chat_handler_t chat;

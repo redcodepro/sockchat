@@ -1,5 +1,7 @@
 #include "main.h"
 
+#if (MYSQL_ENABLED == 1)
+
 bool mysql_t::init(const char* address, const char* user, const char* password, const char* schema)
 {
 	try
@@ -159,3 +161,5 @@ sql::SQLString mysql_t::escape_string(const sql::SQLString& in)
 {
 	return reinterpret_cast<sql::mysql::MySQL_Connection*>(m_connect)->escapeString(in);
 }
+
+#endif

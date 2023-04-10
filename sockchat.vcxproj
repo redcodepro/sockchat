@@ -161,6 +161,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cmd-handler.h" />
+    <ClInclude Include="config.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="md5.h" />
