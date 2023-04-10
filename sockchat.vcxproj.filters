@@ -45,6 +45,9 @@
     <ClInclude Include="mysql.h">
       <Filter>external</Filter>
     </ClInclude>
+    <ClInclude Include="sqlite3\sqlite3.h">
+      <Filter>sqlite3</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="handlers">
@@ -53,5 +56,13 @@
     <Filter Include="external">
       <UniqueIdentifier>{913dcf28-d34a-4017-9682-eaba80889691}</UniqueIdentifier>
     </Filter>
+    <Filter Include="sqlite3">
+      <UniqueIdentifier>{18d94c19-eeaf-4521-b49a-eac982991793}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="sqlite3\libsqlite3.a">
+      <Filter>sqlite3</Filter>
+    </Library>
   </ItemGroup>
 </Project>
