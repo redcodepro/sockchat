@@ -150,6 +150,7 @@
     <ClCompile Include="cmd-handler.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="md5.cpp" />
+    <ClCompile Include="sqlite.cpp" />
     <ClCompile Include="udp-cryptor.cpp" />
     <ClCompile Include="udp-server.cpp" />
     <ClCompile Include="mysql.cpp" />
@@ -165,6 +166,7 @@
     <ClInclude Include="log.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="md5.h" />
+    <ClInclude Include="sqlite.h" />
     <ClInclude Include="sqlite3\sqlite3.h" />
     <ClInclude Include="udp-cryptor.h" />
     <ClInclude Include="udp-user.h" />

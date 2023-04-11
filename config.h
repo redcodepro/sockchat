@@ -3,7 +3,7 @@
 #define UDP_ADDRESS			"0.0.0.0"
 #define UDP_PORT			7777
 
-#define MYSQL_ENABLED		1
+#define MYSQL_ENABLED		0
 
 #if (MYSQL_ENABLED == 1)
 #  define MYSQL_ADDRESS		"localhost"

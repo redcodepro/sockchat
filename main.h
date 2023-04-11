@@ -56,7 +56,7 @@ namespace std {
 	{
 		std::size_t operator()(const udpid_t& k) const
 		{
-			return *(std::size_t*)(&k);//std::hash<uint64_t>()((uint64_t&)k);
+			return *(std::size_t*)(&k);
 		}
 	};
 }
@@ -72,6 +72,7 @@ struct userdata_t
 
 #include "udp-packet.h"
 #include "mysql.h"
+#include "sqlite.h"
 #include "udp-cryptor.h"
 #include "udp-user.h"
 #include "udp-server.h"

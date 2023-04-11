@@ -23,6 +23,9 @@
     <ClCompile Include="mysql.cpp">
       <Filter>external</Filter>
     </ClCompile>
+    <ClCompile Include="sqlite.cpp">
+      <Filter>external</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
@@ -49,6 +52,9 @@
       <Filter>sqlite3</Filter>
     </ClInclude>
     <ClInclude Include="config.h" />
+    <ClInclude Include="sqlite.h">
+      <Filter>external</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="handlers">
