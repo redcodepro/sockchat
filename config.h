@@ -16,3 +16,5 @@
 
 #define LOG_FILE			0
 #define LOG_FILENAME		"sockchat.log"
+
+#define CHAT_SEND_NOAUTH	1

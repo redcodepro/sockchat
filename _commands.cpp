@@ -241,11 +241,11 @@ void cmd_setnick(user_t* user, int id, const char* nick)
 	if (usr == nullptr)
 		return;
 
-	if (!nick_is_valid(nick, false))
-	{
-		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Ник не подходит!");
-		return;
-	}
+//	if (!nick_is_valid(nick, false))
+//	{
+//		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Ник не подходит!");
+//		return;
+//	}
 
 	usr->set_nick(nick);
 	user->AddChat(0xFFDB0000, ">> Установлен ник для %s", usr->nick_c());
@@ -253,7 +253,20 @@ void cmd_setnick(user_t* user, int id, const char* nick)
 
 void cmd_setprefix(user_t* user, int id, const char* prefix)
 {
+	user_t* usr = find_target(user, id);
+	if (usr == nullptr)
+		return;
 
+	if (!strcmp(prefix, "-"))
+	{
+		usr->set_prefix("");
+		user->AddChat(0xFFDB0000, ">> Сброшен префикс для %s", usr->nick_c());
+	}
+	else
+	{
+		usr->set_prefix(prefix);
+		user->AddChat(0xFFDB0000, ">> Установлен префикс для %s", usr->nick_c());
+	}
 }
 
 void cmd_setstatus(user_t* user, int id, int status)
@@ -384,7 +397,7 @@ void init_commands()
 	cmds.add({ "cu", "clear_user" },	new cmd_t{ 3, (void*)cmd_clearuser,	"d",	"<id>"			});
 	cmds.add({ "destroy" },				new cmd_t{ 4, (void*)cmd_destroy,	"d",	"<id>"			});
 	cmds.add({ "setcolor" },			new cmd_t{ 4, (void*)cmd_setcolor,	"dx",	"<id> <color>"	});
-//	cmds.add({ "setprefix" },			new cmd_t{ 4, (void*)cmd_setprefix,	"d*",	"<id> <prefix>"	});
+	cmds.add({ "setprefix" },			new cmd_t{ 4, (void*)cmd_setprefix,	"d*",	"<id> <prefix>"	});
 	cmds.add({ "setnick" },				new cmd_t{ 5, (void*)cmd_setnick,	"ds",	"<id> <nick>"	});
 	cmds.add({ "setstatus" },			new cmd_t{ 5, (void*)cmd_setstatus,	"dd",	"<id> <status>"	});
 	cmds.add({ "rainbow", "makegay" },	new cmd_t{ 5, (void*)cmd_rainbow,	"d",	"<id>"			});

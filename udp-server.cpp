@@ -200,6 +200,10 @@ void udpserver_t::exec()
 
 void udpserver_t::Broadcast(packet_t* packet, int level)
 {
+#if (CHAT_SEND_NOAUTH == 1)
+	if (level == 1)
+		level = 0;
+#endif
 	m_crypt.encrypt(packet);
 	for (auto& it : m_users)
 	{

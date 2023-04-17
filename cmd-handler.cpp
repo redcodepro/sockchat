@@ -34,7 +34,7 @@ private:
 				args.args[i] = sscanf_args[i];
 				break;
 			case '*':
-				sscanf_args[i] = new char[256]; sscanf_fmt += " %256[^[]]";
+				sscanf_args[i] = new char[256]; sscanf_fmt += " %256[^\n]";
 				args.args[i] = sscanf_args[i];
 				break;
 			}
