@@ -4,6 +4,13 @@ typedef std::deque<udpid_t> udpids_t;
 typedef std::unordered_map<udpid_t, user_t*> udpusers_t;
 typedef std::unordered_set<in_addr_t> bannedips_t;
 
+struct inpacket_t
+{
+	packet_t packet;
+	sockaddr_in from;
+};
+typedef std::deque<inpacket_t*> incoming_t;
+
 class udpserver_t
 {
 	friend class user_t;
@@ -21,13 +28,19 @@ private:
 	time_t		m_lpu; // last ping users
 //	std::string	m_notify_url;
 
+	std::mutex	m_lock;
+	incoming_t	m_packets;
+	std::thread m_thread;
+
+	void		do_recv();
+	static void thread_routine(udpserver_t* server);
+
 	bool		m_active;
 
 	// internal functions
 	ssize_t		recvfrom(packet_t* packet, sockaddr_in* from);
 	ssize_t		sendto(packet_t* packet, sockaddr_in* to);
 
-	void		process();
 	void		on_recv(packet_t* packet, sockaddr_in* from);
 	void		on_idle();
 

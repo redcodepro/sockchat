@@ -28,7 +28,7 @@ ssize_t udpserver_t::recvfrom(packet_t* packet, sockaddr_in* from)
 	return ::recvfrom(
 		m_socket,
 		packet, sizeof(packet_t),
-		MSG_DONTWAIT,
+		0,
 		(sockaddr*)from, (socklen_t*)&fromlen
 	);
 }
@@ -105,43 +105,6 @@ void udpserver_t::on_idle()
 	send_online();
 }
 
-void udpserver_t::process()
-{
-	srand(time(0));
-	srand(time(0) + rand());
-	m_crypt.init(rand());
-
-	_printf("[info] Server running at: %s", addr(&m_addr));
-
-	while (m_active)
-	{
-		on_idle();
-
-		packet_t packet;
-		sockaddr_in from;
-		ssize_t rc = recvfrom(&packet, &from);
-		if (rc == SOCKET_ERROR)
-		{
-			if (errno == EAGAIN)
-			{
-				Sleep(10);
-				continue;
-			}
-			_printf("[info] Server has crashed");
-			return;
-		}
-
-		if (rc < sizeof(packet_header_t) || rc != (packet.len + sizeof(packet_header_t)))
-		{
-			_printf("[info] bad packet");
-			continue;
-		}
-
-		on_recv(&packet, &from);
-	}
-	_printf("[info] Server stopped");
-}
-
 void udpserver_t::ping_users()
 {
 	// update period: 1s
@@ -191,11 +154,81 @@ void udpserver_t::free_users()
 	m_free.clear();
 }
 
+void udpserver_t::do_recv()
+{
+	while (m_active)
+	{
+		inpacket_t* data = new inpacket_t;
+		if (data == nullptr)
+			continue;
+
+		ssize_t rc = recvfrom(&data->packet, &data->from);
+		if (rc == SOCKET_ERROR)
+		{
+			//_printf("[error] socket: errno = %d", errno);
+			continue;
+		}
+
+		if (rc < sizeof(packet_header_t) || rc != (data->packet.len + sizeof(packet_header_t)))
+		{
+			//_printf("[error] socket: bad packet");
+			continue;
+		}
+
+		std::lock_guard lock(m_lock);
+		m_packets.push_back(data);
+	}
+}
+
+void udpserver_t::thread_routine(udpserver_t* server)
+{
+	server->do_recv();
+}
+
 void udpserver_t::exec()
 {
+	srand(time(0));
+	srand(time(0) + rand());
+	m_crypt.init(rand());
+
+	_printf("[info] Server running at: %s", addr(&m_addr));
+
 	m_active = true;
-	process();
+	m_thread = std::thread(thread_routine, this);
+
+	while (m_active)
+	{
+		on_idle();
+
+		while (true)
+		{
+			inpacket_t* data = nullptr;
+			
+			{
+				std::lock_guard lock(m_lock);
+				if (m_packets.size())
+				{
+					data = m_packets.front();
+					m_packets.pop_front();
+				}
+			}
+
+			if (data == nullptr)
+				break;
+
+			on_recv(&data->packet, &data->from);
+
+			delete data;
+		}
+
+		usleep(10000); // 10 ms sleep
+	}
+
 	m_active = false;
+	if (m_thread.joinable())
+		m_thread.join();
+
+	_printf("[info] Server stopped");
 }
 
 void udpserver_t::Broadcast(packet_t* packet, int level)

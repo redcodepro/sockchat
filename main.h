@@ -5,6 +5,7 @@
 #include <deque>
 #include <mutex>
 #include <regex>
+#include <thread>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -28,8 +29,6 @@ typedef int SOCKET;
 #define INVALID_SOCKET -1
 #define SOCKET_ERROR -1
 #define SOCKET_CLOSE(s) if (s) { close(s); s = INVALID_SOCKET; }
-
-#define Sleep(ms) usleep(ms*1000);
 
 #define _printf _g_log.log
 #define _delete(p) if (p) { delete p; p = nullptr; }
