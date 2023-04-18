@@ -66,6 +66,12 @@ void cmd_setpass(user_t* user, const char* pass)
 	user->AddChat(0xFF9CFF9F, "Пароль изменён на {FFFFFF}\"%s\"{9cff9f}. Используйте {FFFFFF}F8 {9cff9f}что-бы сохранить.", pass);
 }
 
+void cmd_help(user_t* user)
+{
+	user->AddChat(0xFFF7F488, "Упс! Кто-то забил хер на содержимое этой команды.");
+	user->AddChat(0xFFF7F488, "Пожалуйтесь автору на автора, может исправит...");
+}
+
 void cmd_ping(user_t* user)
 {
 	user->AddChat(0xFFF7F488, "Pong!");
@@ -241,6 +247,11 @@ void cmd_setnick(user_t* user, int id, const char* nick)
 	if (usr == nullptr)
 		return;
 
+	if (db.find_user(nick) != -1)
+	{
+		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Ник занят!");
+		return;
+	}
 //	if (!nick_is_valid(nick, false))
 //	{
 //		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Ник не подходит!");
@@ -322,11 +333,6 @@ void cmd_notify(user_t* user)
 	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Звук входящих сообщений %s", user->m_notify ? "{00ff00}включен" : "{ff0000}выключен");
 }
 
-void cmd_notify_me(user_t* user)
-{
-	user->send_notify();
-}
-
 void cmd_setnotify(user_t* user, const char* name)
 {
 	std::string url = find_audio_url(name);
@@ -346,7 +352,7 @@ void cmd_setnotify(user_t* user, const char* name)
 	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Установлен звук уведомлений: {0077e5}\"%s\"", url.c_str());
 }
 
-void cmd_play_all(user_t* user, const char* name)
+void cmd_playnotify(user_t* user, const char* name)
 {
 	std::string url = find_audio_url(name);
 	if (url.empty())
@@ -379,6 +385,7 @@ void init_commands()
 	cmds.add({ "setpass", "passwd" },	new cmd_t{ 1, (void*)cmd_setpass,	"s",	"<pass>"		});
 //	cmds.add({ "ping" },				new cmd_t{ 1, (void*)cmd_ping,		"",		""				});
 //	cmds.add({ "time" },				new cmd_t{ 1, (void*)cmd_time,		"",		""				});
+	cmds.add({ "help" },				new cmd_t{ 1, (void*)cmd_help,		"",		""				});
 	cmds.add({ "msg", "pm", "sms" },	new cmd_t{ 1, (void*)cmd_msg,		"d*",	"<id> <text>"	});
 	cmds.add({ "re", "r" },				new cmd_t{ 1, (void*)cmd_msg_re,	"*",	"<text>"		});
 	cmds.add({ "me" },					new cmd_t{ 1, (void*)cmd_me,		"*",	"<text>"		});
@@ -403,9 +410,8 @@ void init_commands()
 	cmds.add({ "rainbow", "makegay" },	new cmd_t{ 5, (void*)cmd_rainbow,	"d",	"<id>"			});
 	cmds.add({ "hideme" },				new cmd_t{ 4, (void*)cmd_hideme,	"",		""				});
 	cmds.add({ "notify" },				new cmd_t{ 1, (void*)cmd_notify,	"",		""				});
-//	cmds.add({ "notify_test" },			new cmd_t{ 1, (void*)cmd_notify_me,	"",		""				});
 //	cmds.add({ "notify_set" },			new cmd_t{ 5, (void*)cmd_setnotify,	"*",	"<name>"		});
-	cmds.add({ "play" },				new cmd_t{ 5, (void*)cmd_play_all,	"*",	"<name>"		});
+	cmds.add({ "play" },				new cmd_t{ 5, (void*)cmd_playnotify,"*",	"<name>"		});
 	cmds.add({ "tts", "say" },			new cmd_t{ 5, (void*)cmd_tts_all,	"*",	"<text>"		});
 
 	_printf("[info] init_commands(): %d commands loaded.", cmds.get_count());

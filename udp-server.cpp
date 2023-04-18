@@ -19,28 +19,44 @@ bool udpserver_t::bind(const char* ipv4, uint16_t port)
 	if (::bind(m_socket, (sockaddr*)&m_addr, sizeof(m_addr)) != 0)
 		return false;
 
+	int size = 1024 * 1024;
+	setsockopt(m_socket, SOL_SOCKET, SO_RCVBUF, &size, sizeof(size));
+	setsockopt(m_socket, SOL_SOCKET, SO_SNDBUF, &size, sizeof(size));
+
 	return true;
 }
 
 ssize_t udpserver_t::recvfrom(packet_t* packet, sockaddr_in* from)
 {
 	socklen_t fromlen = sizeof(from);
-	return ::recvfrom(
+	ssize_t rc = ::recvfrom(
 		m_socket,
 		packet, sizeof(packet_t),
 		0,
 		(sockaddr*)from, (socklen_t*)&fromlen
 	);
+	if (rc == SOCKET_ERROR)
+	{
+		_printf("[error] socket: recvfrom errno = %d", errno);
+		return -1;
+	}
+	return rc;
 }
 
 ssize_t udpserver_t::sendto(packet_t* packet, sockaddr_in* to)
 {
-	return ::sendto(
+	ssize_t sc = ::sendto(
 		m_socket,
 		packet, (packet->len + sizeof(packet_header_t)),
 		0,
 		(sockaddr*)to, sizeof(*to)
 	);
+	if (sc == SOCKET_ERROR)
+	{
+		_printf("[error] socket: sendto errno = %d", errno);
+		return -1;
+	}
+	return sc;
 }
 
 void udpserver_t::init_user(packet_t* packet, sockaddr_in* from)
@@ -64,7 +80,6 @@ void udpserver_t::init_user(packet_t* packet, sockaddr_in* from)
 	m_users.insert(std::pair(user->m_udpid, user));
 
 	_printf("[connect] Connect: %s", addr(from));
-	on_udn();
 }
 
 void udpserver_t::on_recv(packet_t* packet, sockaddr_in* from)
@@ -123,7 +138,7 @@ void udpserver_t::ping_users()
 			user->udn();
 		}
 
-		if (elapsed < 10)
+		if (elapsed < 15)
 			continue;
 
 		if (elapsed < 20)
@@ -148,7 +163,6 @@ void udpserver_t::free_users()
 		m_users.erase(it);
 		user->OnDisconnect();
 		_printf("[connect] Disconnect: %s", addr(&user->m_addr));
-		on_udn();
 		delete user;
 	}
 	m_free.clear();
@@ -163,15 +177,10 @@ void udpserver_t::do_recv()
 			continue;
 
 		ssize_t rc = recvfrom(&data->packet, &data->from);
-		if (rc == SOCKET_ERROR)
-		{
-			//_printf("[error] socket: errno = %d", errno);
-			continue;
-		}
 
 		if (rc < sizeof(packet_header_t) || rc != (data->packet.len + sizeof(packet_header_t)))
 		{
-			//_printf("[error] socket: bad packet");
+			_printf("[error] socket: bad packet");
 			continue;
 		}
 

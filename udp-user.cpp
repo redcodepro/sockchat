@@ -162,7 +162,9 @@ void user_t::OnDisconnect()
 		return;
 
 	if (m_status < 4)
-		chat.sendf(1, m_id, m_color, "%s {f7f488}отключислся", nick());
+		chat.sendf(1, m_id, m_color, "%s {f7f488}отключился", nick());
+
+	server.on_udn();
 }
 
 void user_t::OnAuth(const std::string& key)
@@ -214,7 +216,7 @@ void user_t::OnPacket(packet_t* packet)
 		{
 			bool b;
 			packet->Read<bool>(b);
-			if (m_watching != b)
+			if (m_watching != b && m_status != 0)
 				server.on_udn();
 			m_watching = b;
 		}

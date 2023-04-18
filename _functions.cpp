@@ -88,7 +88,6 @@ void udpserver_t::send_online()
 	int users = 0;
 	int total = 0;
 	std::string online;
-	std::string connect;
 
 	for (auto& it : m_users)
 	{
@@ -96,8 +95,7 @@ void udpserver_t::send_online()
 
 		if (user->m_status == 0)
 		{
-			sprintf(buf, "\n%-21s\t%s", addr(&user->m_addr), user->m_watching ? "\uf11a" : "\uf111");
-			connect += buf;
+			// nope
 		}
 		else
 		{
@@ -120,19 +118,10 @@ void udpserver_t::send_online()
 
 	// ??? -> init, append
 	if (online.size() > 1024) online.resize(1024);
-	if (connect.size() > 1024) connect.resize(1024);
 
 	packet_t packet(id_hudtext_init);
 	packet.WriteString(online);
 	Broadcast(&packet, 0);
-
-	if (connect.size())
-	{
-		connect.insert(0, "\n\n{dfdfdf}Подключены:{b0b0b0}");
-		packet_t packet_a(id_hudtext_append);
-		packet_a.WriteString(connect);
-		Broadcast(&packet_a, 5);
-	}
 }
 
 bool key_is_valid(const std::string& key)
