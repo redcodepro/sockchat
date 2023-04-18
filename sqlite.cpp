@@ -109,8 +109,7 @@ int sqlite_t::find_user(const std::string& nick)
 	sqlite3_reset(m_find_user);
 	sqlite3_clear_bindings(m_find_user);
 	sqlite3_bind_text(m_find_user, 1, nick.c_str(), -1, SQLITE_TRANSIENT);
-	errstep(m_find_user, SQLITE_ROW, -1);
-	return sqlite3_column_int(m_find_user, 0);
+	return (sqlite3_step(m_find_user) == SQLITE_ROW) ? sqlite3_column_int(m_find_user, 0) : -1;
 }
 
 bool sqlite_t::load_user(int id, userdata_t* data)
@@ -144,11 +143,8 @@ bool sqlite_t::restore_user(const std::string& restore, userdata_t* data)
 	sqlite3_reset(m_restore_user);
 	sqlite3_clear_bindings(m_restore_user);
 	sqlite3_bind_text(m_restore_user, 1, restore.c_str(), -1, SQLITE_TRANSIENT);
-	errstep(m_restore_user, SQLITE_ROW, false);
-
-	int id = sqlite3_column_int(m_restore_user, 0);
-
-	return load_user(id, data);
+	
+	return (sqlite3_step(m_restore_user) == SQLITE_ROW) ? load_user(sqlite3_column_int(m_restore_user, 0), data) : false;
 }
 
 void sqlite_t::set_restore(int id, const std::string& restore)

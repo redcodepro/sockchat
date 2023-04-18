@@ -78,8 +78,6 @@ void udpserver_t::init_user(packet_t* packet, sockaddr_in* from)
 //		user->send_notify_set(m_notify_url);
 
 	m_users.insert(std::pair(user->m_udpid, user));
-
-	_printf("[connect] Connect: %s", addr(from));
 }
 
 void udpserver_t::on_recv(packet_t* packet, sockaddr_in* from)
@@ -147,7 +145,6 @@ void udpserver_t::ping_users()
 			continue;
 		}
 
-//		_printf("[info] User %s didn`t respond.", addr(&user->m_addr));
 		m_free.push_back(it.first);
 	}
 }
@@ -162,7 +159,6 @@ void udpserver_t::free_users()
 		user_t* user = m_users.at(it);
 		m_users.erase(it);
 		user->OnDisconnect();
-		_printf("[connect] Disconnect: %s", addr(&user->m_addr));
 		delete user;
 	}
 	m_free.clear();
@@ -292,6 +288,8 @@ void udpserver_t::SendPM(user_t* src, user_t* dst, const char* message)
 	src->m_xid = dst->m_id;
 	dst->m_xid = src->m_id;
 	dst->send_notify();
+
+	_printf("[pm] [%s >> %s] %s", src->m_nick.c_str(), dst->m_nick.c_str(), message);
 }
 
 void udpserver_t::NotifyAll(int level)

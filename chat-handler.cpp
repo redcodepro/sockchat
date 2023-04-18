@@ -22,6 +22,8 @@ void chat_handler_t::send_history(user_t* user)
 		out.Write<time_t>(it.m_time);
 		out.Write<color_t>(it.m_color);
 		out.WriteString(it.m_text);
+		out.Write<bool>(false); // notify
+		out.Write<bool>(false); // resend
 
 		user->send(&out);
 	}
@@ -70,9 +72,10 @@ void chat_handler_t::send(const entry_t& entry)
 	out.Write<time_t>(entry.m_time);
 	out.Write<color_t>(entry.m_color);
 	out.WriteString(entry.m_text);
+	out.Write<bool>(true);
+	out.Write<bool>(true);
 
 	server.Broadcast(&out, entry.m_status);
-	server.NotifyAll(entry.m_status);
 }
 
 void chat_handler_t::pushf(int status, id_t id, color_t color, const char* fmt, ...)

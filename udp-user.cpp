@@ -145,6 +145,8 @@ void user_t::AddChat(color_t color, const char* fmt, ...)
 	packet.Write<color_t>(color);
 	packet.Write<len_t>(count);
 	packet.Write(buf, count);
+	packet.Write<bool>(false); // notify
+	packet.Write<bool>(false); // resend
 	user_t::send(&packet);
 }
 
@@ -154,6 +156,8 @@ void user_t::OnConnect()
 
 	if (m_status < 4)
 		chat.sendf(1, m_id, m_color, "%s {f7f488}подключился", nick());
+
+	_printf("[login] user: %s[%d], ip: %s", m_nick.c_str(), m_id, addr(&m_addr));
 }
 
 void user_t::OnDisconnect()
@@ -165,6 +169,8 @@ void user_t::OnDisconnect()
 		chat.sendf(1, m_id, m_color, "%s {f7f488}отключился", nick());
 
 	server.on_udn();
+
+	_printf("[logout] user: %s[%d], ip: %s", m_nick.c_str(), m_id, addr(&m_addr));
 }
 
 void user_t::OnAuth(const std::string& key)
