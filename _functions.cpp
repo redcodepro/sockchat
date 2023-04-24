@@ -79,10 +79,11 @@ std::string format_out(const std::string& in, bool remove_color)
 
 void udpserver_t::send_online()
 {
+	time_t _time = time(0);
 	// update period: 30s or onchange
-	if ((m_time - m_lou) < 30)
+	if ((_time - m_lou) < 30)
 		return;
-	m_lou = m_time;
+	m_lou = _time;
 
 	char buf[256];
 	int users = 0;
@@ -116,11 +117,8 @@ void udpserver_t::send_online()
 	sprintf(buf, "\uf007 %d / %d | Онлайн:", users, total);
 	online.insert(0, buf);
 
-	// ??? -> init, append
-	if (online.size() > 1024) online.resize(1024);
-
-	packet_t packet(id_hudtext_init);
-	packet.WriteString(online);
+	opacket_t packet(id_hudtext_init);
+	packet.write_string(online);
 	Broadcast(&packet, 0);
 }
 
@@ -190,10 +188,13 @@ std::string md5(const std::string& in)
 	return hash.getHash();
 }
 
-const char* addr(sockaddr_in* addr)
+const char* addr(ENetAddress* addr)
 {
-	static char buf[64];
-	snprintf(buf, 64, "%s:%hu", inet_ntoa(addr->sin_addr), ntohs(addr->sin_port));
+	char ip[256];
+	enet_address_get_host_ip(addr, ip, 256);
+	
+	static char buf[256];
+	snprintf(buf, 256, "%s:%hu", ip, addr->port);
 	return buf;
 }
 

@@ -24,7 +24,7 @@
       <Filter>external</Filter>
     </ClCompile>
     <ClCompile Include="sqlite.cpp">
-      <Filter>external</Filter>
+      <Filter>sqlite3</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -48,12 +48,15 @@
     <ClInclude Include="mysql.h">
       <Filter>external</Filter>
     </ClInclude>
-    <ClInclude Include="sqlite3\sqlite3.h">
+    <ClInclude Include="config.h" />
+    <ClInclude Include="enet\enet.h">
+      <Filter>enet</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite.h">
       <Filter>sqlite3</Filter>
     </ClInclude>
-    <ClInclude Include="config.h" />
-    <ClInclude Include="sqlite.h">
-      <Filter>external</Filter>
+    <ClInclude Include="sqlite3\sqlite3.h">
+      <Filter>sqlite3\lib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -66,10 +69,19 @@
     <Filter Include="sqlite3">
       <UniqueIdentifier>{18d94c19-eeaf-4521-b49a-eac982991793}</UniqueIdentifier>
     </Filter>
+    <Filter Include="enet">
+      <UniqueIdentifier>{cdf8c9da-efc8-4d0c-b520-204fd2d25b5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sqlite3\lib">
+      <UniqueIdentifier>{b228b35c-281f-43f8-9c3d-75fbde02e66a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <Library Include="enet\libenet.a">
+      <Filter>enet</Filter>
+    </Library>
     <Library Include="sqlite3\libsqlite3.a">
-      <Filter>sqlite3</Filter>
+      <Filter>sqlite3\lib</Filter>
     </Library>
   </ItemGroup>
 </Project>

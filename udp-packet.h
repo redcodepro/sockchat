@@ -1,71 +1,68 @@
-#pragma once
+#include "main.h"
 
-enum packet_id
+enum packet_id : int
 {
-	id_conn_request		= 0, // ver, auth!1.0
-	id_ping				= 1,
-	id_pong				= 2,
-	id_conn_init		= 4, // cookie, timeout, enc_seed
-	id_conn_rejected	= 5,
-	id_conn_closed		= 6,
-	id_conn_banned		= 7,
-	id_user_auth		= 8, // authkey
+	id_chat_crypto		= 0,
+	id_chat_auth		= 1, // ver, auth
+	id_chat_event		= 2,
+	id_chat_message		= 3,
+	id_chat_unreaded	= 4,
+	id_chat_erase		= 5,
+	id_chat_erase_id	= 6,
 
-	id_hudtext_init		= 19,
-	id_hudtext_append	= 20,
-	id_hudtext_clear	= 21,
-	id_set_unreaded		= 22, // count
+	id_user_auth		= 10,
+	id_user_input		= 11, // input
+	id_user_watching	= 12,
 
-	id_notify_play		= 25,
-	id_notify_set_url	= 26,
-	id_notify_play_url	= 27,
+	id_hudtext_init		= 20,
+	id_hudtext_append	= 21,
+	id_hudtext_clear	= 22,
 
-	id_auth				= 'a',
-	id_event			= 'e',
-	id_message			= '<',
-	id_user_chat		= '>',
-	id_user_command		= '/',
-	id_watching			= 'w',
+	id_notify_play		= 30,
+	id_notify_play_url	= 31,
+	id_notify_set		= 32,
+	id_notify_set_url	= 33,
 };
 
 typedef unsigned short len_t;
 typedef unsigned int color_t;
 typedef unsigned int id_t;
 
-class packet_header_t
+class ipacket_t
 {
+	friend class udpcrypt_t;
+private:
+	size_t len;
+	size_t pos;
+	uint8_t* data;
 public:
-	short cookie = 0;
-	len_t id = 0;
-	len_t len = 0;
-	len_t pos = 0;
+	ipacket_t(uint8_t* _data, size_t _len) : data(_data), len(_len), pos(0) {}
+	ipacket_t(ENetPacket* packet) : ipacket_t(packet->data, packet->dataLength) {}
+
+	bool read(void* dst, size_t n);
+	bool read_string(std::string& val);
+
+	template <typename T>
+	bool read(T& val) { return read(&val, sizeof(T)); }
 };
 
-#define packet_max_size		1472
-#define packet_data_size	(packet_max_size - sizeof(packet_header_t))
-
-class packet_t : public packet_header_t
+class opacket_t
 {
+	friend class udpcrypt_t;
+private:
+	std::string data;
 public:
-	char data[packet_data_size];
+	opacket_t(packet_id id) { write<packet_id>(id); }
 
-	packet_t() {}
-	packet_t(packet_id _id) { id = _id; }
-
-	bool Write(const void* src, len_t n);
-	bool Read(void* dst, len_t n);
+	void write(const void* src, size_t n);
+	void write_string(const std::string& val);
 
 	template <typename T>
-	bool Write(T val) { return Write(&val, sizeof(T)); }
-	template <typename T>
-	bool Read(T& val) { return Read(&val, sizeof(T)); }
+	void write(const T& val) { write(&val, sizeof(T)); }
 
-	bool WriteString(const std::string& in);
-	bool ReadString(std::string& val);
-	std::string ReadString() { std::string out; ReadString(out); return out; }
+	ENetPacket* to_enet(enet_uint32 flags = ENET_PACKET_FLAG_RELIABLE);
 };
 
 static_assert(sizeof(id_t) == 4);
 static_assert(sizeof(len_t) == 2);
 static_assert(sizeof(color_t) == 4);
-static_assert(sizeof(packet_t) == packet_max_size);

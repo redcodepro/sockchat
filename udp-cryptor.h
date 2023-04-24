@@ -9,7 +9,7 @@ private:
 public:
 	void			init(unsigned int seed);
 	void			reset() { m_seed = 0; }
-	void			encrypt(packet_t* packet);
-	void			decrypt(packet_t* packet);
+	void			encrypt(opacket_t* packet);
+	void			decrypt(ipacket_t* packet);
 	unsigned int	seed() { return m_seed; }
 };

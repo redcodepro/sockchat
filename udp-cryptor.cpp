@@ -85,26 +85,26 @@ void udpcrypt_t::init(unsigned int seed)
 	create_table(m_seed, m_table, m_table_rev);
 }
 
-void udpcrypt_t::encrypt(packet_t* packet)
+void udpcrypt_t::encrypt(opacket_t* packet)
 {
 	if (m_seed == 0)
 		return;
 
-	for (int i = 0; i < packet->len; ++i)
+	for (size_t i = 0; i < packet->data.size(); ++i)
 	{
-		char& c = packet->data[i];
-		c = (char)m_table[(uint8_t)c];
+		uint8_t& c = (uint8_t&)packet->data[i];
+		c = (uint8_t)m_table[c];
 	}
 }
 
-void udpcrypt_t::decrypt(packet_t* packet)
+void udpcrypt_t::decrypt(ipacket_t* packet)
 {
 	if (m_seed == 0)
 		return;
 
-	for (int i = 0; i < packet->len; ++i)
+	for (size_t i = 0; i < packet->len; ++i)
 	{
-		char& c = packet->data[i];
-		c = (char)m_table_rev[(uint8_t)c];
+		uint8_t& c = packet->data[i];
+		c = (uint8_t)m_table_rev[c];
 	}
 }

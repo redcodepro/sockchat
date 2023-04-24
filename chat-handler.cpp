@@ -17,13 +17,13 @@ void chat_handler_t::send_history(user_t* user)
 		if (user->m_status < it.m_status)
 			continue;
 		
-		packet_t out(id_message);
-		out.Write<id_t>(it.m_id);
-		out.Write<time_t>(it.m_time);
-		out.Write<color_t>(it.m_color);
-		out.WriteString(it.m_text);
-		out.Write<bool>(false); // notify
-		out.Write<bool>(false); // resend
+		opacket_t out(id_chat_message);
+		out.write<id_t>(it.m_id);
+		out.write<time_t>(it.m_time);
+		out.write<color_t>(it.m_color);
+		out.write_string(it.m_text);
+		out.write<bool>(false); // notify
+		out.write<bool>(false); // resend
 
 		user->send(&out);
 	}
@@ -67,13 +67,13 @@ void chat_handler_t::send(const entry_t& entry)
 {
 	_printf("[chat] %s", entry.m_text.c_str());
 
-	packet_t out(id_message);
-	out.Write<id_t>(entry.m_id);
-	out.Write<time_t>(entry.m_time);
-	out.Write<color_t>(entry.m_color);
-	out.WriteString(entry.m_text);
-	out.Write<bool>(true);
-	out.Write<bool>(true);
+	opacket_t out(id_chat_message);
+	out.write<id_t>(entry.m_id);
+	out.write<time_t>(entry.m_time);
+	out.write<color_t>(entry.m_color);
+	out.write_string(entry.m_text);
+	out.write<bool>(true);
+	out.write<bool>(true);
 
 	server.Broadcast(&out, entry.m_status);
 }

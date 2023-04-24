@@ -2,192 +2,12 @@
 
 bool udpserver_t::bind(const char* ipv4, uint16_t port)
 {
-	in_addr_t addr = inet_addr(ipv4);
-	if (addr == INADDR_NONE)
-		return false;
+	m_addr.host = ENET_HOST_ANY;
+	m_addr.port = 7778;
 
-	m_addr.sin_family = AF_INET;
-	m_addr.sin_addr.s_addr = addr;
-	m_addr.sin_port = htons(port);
+	m_server = enet_host_create(&m_addr, CHAT_MAX_CLIENTS, 2, 0, 0);
 
-	SOCKET_CLOSE(m_socket);
-
-	m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	if (m_socket == INVALID_SOCKET)
-		return false;
-
-	if (::bind(m_socket, (sockaddr*)&m_addr, sizeof(m_addr)) != 0)
-		return false;
-
-	int size = 1024 * 1024;
-	setsockopt(m_socket, SOL_SOCKET, SO_RCVBUF, &size, sizeof(size));
-	setsockopt(m_socket, SOL_SOCKET, SO_SNDBUF, &size, sizeof(size));
-
-	return true;
-}
-
-ssize_t udpserver_t::recvfrom(packet_t* packet, sockaddr_in* from)
-{
-	socklen_t fromlen = sizeof(from);
-	ssize_t rc = ::recvfrom(
-		m_socket,
-		packet, sizeof(packet_t),
-		0,
-		(sockaddr*)from, (socklen_t*)&fromlen
-	);
-	if (rc == SOCKET_ERROR)
-	{
-		_printf("[error] socket: recvfrom errno = %d", errno);
-		return -1;
-	}
-	return rc;
-}
-
-ssize_t udpserver_t::sendto(packet_t* packet, sockaddr_in* to)
-{
-	ssize_t sc = ::sendto(
-		m_socket,
-		packet, (packet->len + sizeof(packet_header_t)),
-		0,
-		(sockaddr*)to, sizeof(*to)
-	);
-	if (sc == SOCKET_ERROR)
-	{
-		_printf("[error] socket: sendto errno = %d", errno);
-		return -1;
-	}
-	return sc;
-}
-
-void udpserver_t::init_user(packet_t* packet, sockaddr_in* from)
-{
-	if (packet->ReadString() != "Sockchat/1.1")
-		return;
-
-	user_t* user = new user_t(from, m_time);
-	if (user == nullptr)
-		return;
-
-	packet_t out(id_conn_init);
-	out.Write<uint16_t>(-1); // packet cookie // not used
-	out.Write<uint32_t>(20000);
-	out.Write<uint32_t>(m_crypt.seed());
-	user->send_r(&out);
-
-//	if (m_notify_url.size())
-//		user->send_notify_set(m_notify_url);
-
-	m_users.insert(std::pair(user->m_udpid, user));
-}
-
-void udpserver_t::on_recv(packet_t* packet, sockaddr_in* from)
-{
-	auto it = m_users.find(udpid_t(from));
-	if (it != m_users.end())
-	{
-		it->second->OnPacket(packet);
-		return;
-	}
-
-	if (packet->id == id_conn_request)
-	{
-		auto res = m_banned.find(from->sin_addr.s_addr);
-		if (res == m_banned.end())
-		{
-			init_user(packet, from);
-		}
-		else
-		{
-			packet_t packet(id_conn_banned);
-			sendto(&packet, from);
-			_printf("[connect] Connection banned: %s", addr(from));
-		}
-	}
-}
-
-void udpserver_t::on_idle()
-{
-	m_time = time(0);
-
-	free_users();
-
-	if (m_users.empty())
-		return;
-
-	ping_users();
-	send_online();
-}
-
-void udpserver_t::ping_users()
-{
-	// update period: 1s
-	if (m_time == m_lpu)
-		return;
-	m_lpu = m_time;
-
-	for (auto& it : m_users)
-	{
-		user_t* user = it.second;
-		time_t elapsed = (m_time - user->m_lpr);
-
-		if (user->m_rainbow)
-		{
-			user->m_color = create_color();
-			user->udn();
-		}
-
-		if (elapsed < 15)
-			continue;
-
-		if (elapsed < 20)
-		{
-			user->send_ping();
-			continue;
-		}
-
-		m_free.push_back(it.first);
-	}
-}
-
-void udpserver_t::free_users()
-{
-	if (m_free.empty())
-		return;
-
-	for (auto& it : m_free)
-	{
-		user_t* user = m_users.at(it);
-		m_users.erase(it);
-		user->OnDisconnect();
-		delete user;
-	}
-	m_free.clear();
-}
-
-void udpserver_t::do_recv()
-{
-	while (m_active)
-	{
-		inpacket_t* data = new inpacket_t;
-		if (data == nullptr)
-			continue;
-
-		ssize_t rc = recvfrom(&data->packet, &data->from);
-
-		if (rc < sizeof(packet_header_t) || rc != (data->packet.len + sizeof(packet_header_t)))
-		{
-			_printf("[error] socket: bad packet");
-			continue;
-		}
-
-		std::lock_guard lock(m_lock);
-		m_packets.push_back(data);
-	}
-}
-
-void udpserver_t::thread_routine(udpserver_t* server)
-{
-	server->do_recv();
+	return (m_server != nullptr);
 }
 
 void udpserver_t::exec()
@@ -198,74 +18,99 @@ void udpserver_t::exec()
 
 	_printf("[info] Server running at: %s", addr(&m_addr));
 
-	m_active = true;
-	m_thread = std::thread(thread_routine, this);
-
-	while (m_active)
+	ENetEvent ev;
+	while (enet_host_service(m_server, &ev, 500) >= 0)
 	{
-		on_idle();
-
-		while (true)
+		switch (ev.type)
 		{
-			inpacket_t* data = nullptr;
-			
+		case ENET_EVENT_TYPE_CONNECT:
 			{
-				std::lock_guard lock(m_lock);
-				if (m_packets.size())
+				char ip[256];
+				enet_address_get_host_ip(&ev.peer->address, ip, 256);
+
+				if (db.find_banip(ip))
 				{
-					data = m_packets.front();
-					m_packets.pop_front();
+					enet_peer_disconnect_now(ev.peer, 0);
+					break;
+				}
+
+				if (user_t* user = new user_t(ev.peer))
+				{
+					ev.peer->data = user;
+					m_users.insert(std::pair(ev.peer, user));
+
+					opacket_t packet(id_chat_crypto);
+					packet.write<unsigned int>(m_crypt.seed());
+					enet_peer_send(ev.peer, 0, packet.to_enet());
 				}
 			}
+			break;
 
-			if (data == nullptr)
-				break;
+		case ENET_EVENT_TYPE_RECEIVE:
+			{
+				if (user_t* user = (user_t*)ev.peer->data)
+				{
+					ipacket_t packet(ev.packet);
+					user->OnPacket(&packet);
+				}
 
-			on_recv(&data->packet, &data->from);
+				enet_packet_destroy(ev.packet);
+			}
+			break;
 
-			delete data;
+		case ENET_EVENT_TYPE_DISCONNECT:
+		case ENET_EVENT_TYPE_DISCONNECT_TIMEOUT:
+			{
+				if (user_t* user = (user_t*)ev.peer->data)
+				{
+					m_users.erase(ev.peer);
+					user->OnDisconnect();
+					delete user;
+				}
+			}
+			break;
+
+		case ENET_EVENT_TYPE_NONE:
+			break;
 		}
 
-		usleep(10000); // 10 ms sleep
+		send_online(); // ????
 	}
-
-	m_active = false;
-	if (m_thread.joinable())
-		m_thread.join();
 
 	_printf("[info] Server stopped");
 }
 
-void udpserver_t::Broadcast(packet_t* packet, int level)
+void udpserver_t::Broadcast(opacket_t* packet, int level)
 {
 #if (CHAT_SEND_NOAUTH == 1)
 	if (level == 1)
 		level = 0;
 #endif
 	m_crypt.encrypt(packet);
+
+	ENetPacket* ep = packet->to_enet();
 	for (auto& it : m_users)
 	{
+		peer_t peer = it.first;
 		user_t* user = it.second;
 
 		if (user->m_status < level)
 			continue;
 
-		sendto(packet, &user->m_addr);
+		enet_peer_send(peer, 0, ep);
 	}
 }
 
 void udpserver_t::AddEventGlobal(const std::string& text)
 {
-	packet_t packet(id_event);
-	packet.WriteString(text);
+	opacket_t packet(id_chat_event);
+	packet.write_string(text);
 	Broadcast(&packet);
 }
 
 void udpserver_t::KickUser(user_t* user, bool send_closed)
 {
-	if (send_closed)
-		user->send_kicked();
-	m_free.push_back(user->m_udpid);
+	enet_peer_disconnect_later(user->m_peer, 0);
 }
 
 void udpserver_t::MakeBan(user_t* user)
@@ -276,8 +121,7 @@ void udpserver_t::MakeBan(user_t* user)
 
 void udpserver_t::MakeBanIP(user_t* user)
 {
-	m_banned.insert(user->m_addr.sin_addr.s_addr);
-	db.add_banip(inet_ntoa(user->m_addr.sin_addr));
+	//db.add_banip(0);
 	MakeBan(user);
 }
 
@@ -289,12 +133,12 @@ void udpserver_t::SendPM(user_t* src, user_t* dst, const char* message)
 	dst->m_xid = src->m_id;
 	dst->send_notify();
 
-	_printf("[pm] [%s >> %s] %s", src->m_nick.c_str(), dst->m_nick.c_str(), message);
+	_printf("[private] [%s >> %s] %s", src->m_nick.c_str(), dst->m_nick.c_str(), message);
 }
 
 void udpserver_t::NotifyAll(int level)
 {
-	packet_t packet(id_notify_play);
+	/*packet_t packet(id_notify_play);
 	for (auto& it : m_users)
 	{
 		user_t* user = it.second;
@@ -309,29 +153,19 @@ void udpserver_t::NotifyAll(int level)
 			continue;
 
 		sendto(&packet, &user->m_addr);
-	}
+	}*/
 }
 
 void udpserver_t::NotifySet(const std::string& url)
 {
-//	m_notify_url = url;
-
-	packet_t out(id_notify_set_url);
-	out.WriteString(url);
-
-	m_crypt.encrypt(&out);
-
-	for (auto& it : m_users)
-		it.second->send_r(&out);
+	opacket_t packet(id_notify_set_url);
+	packet.write_string(url);
+	Broadcast(&packet);
 }
 
 void udpserver_t::NotifyPlay(const std::string& url)
 {
-	packet_t out(id_notify_play_url);
-	out.WriteString(url);
-
-	m_crypt.encrypt(&out);
-
-	for (auto& it : m_users)
-		it.second->send_r(&out);
+	opacket_t packet(id_notify_play_url);
+	packet.write_string(url);
+	Broadcast(&packet);
 }

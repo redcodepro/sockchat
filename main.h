@@ -9,16 +9,15 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include <sys/types.h>
 #include <sys/time.h>
-#include <sys/socket.h>
 #include <sys/stat.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <memory.h>
+
+#define ENET_STATIC
+#include "enet/enet.h"
 
 #include "config.h"
 
@@ -33,27 +32,13 @@ typedef int SOCKET;
 #define _printf _g_log.log
 #define _delete(p) if (p) { delete p; p = nullptr; }
 
-class udpid_t
-{
-public:
-	in_addr_t ip;
-	in_port_t port;
-	uint16_t  pad; // cookie?
-
-	udpid_t(sockaddr_in* addr) : ip(addr->sin_addr.s_addr), port(addr->sin_port), pad(0) {}
-	bool operator==(const udpid_t& other) const
-	{
-		return (ip == other.ip && port == other.port);
-	}
-};
-
-static_assert(sizeof(udpid_t) == sizeof(uint64_t));
+typedef ENetPeer* peer_t;
 
 namespace std {
 	template <>
-	struct hash<udpid_t>
+	struct hash<peer_t>
 	{
-		std::size_t operator()(const udpid_t& k) const
+		std::size_t operator()(const peer_t& k) const
 		{
 			return *(std::size_t*)(&k);
 		}
@@ -92,7 +77,7 @@ bool nick_is_valid(const std::string& nick, bool check_min = true);
 std::vector<std::string> split(const std::string& in, char delimiter, bool allow_empty = false);
 int string_replace_all(std::string& str, const char* from, const char* to);
 std::string md5(const std::string& in);
-const char* addr(sockaddr_in* addr);
+const char* addr(ENetAddress* addr);
 void init_commands();
 std::string urlencode(const std::string& in);
 std::string find_audio_url(const std::string& name);

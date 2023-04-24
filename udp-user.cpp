@@ -50,80 +50,57 @@ void user_t::logout()
 	user_t::send_auth("");
 }
 
-int user_t::send_r(packet_t* packet)
-{
-	return server.sendto(packet, &m_addr);
-}
-
-int user_t::send(packet_t* packet)
+int user_t::send(opacket_t* packet)
 {
 	server.m_crypt.encrypt(packet);
-	return user_t::send_r(packet);
-}
-
-void user_t::send_ping()
-{
-	packet_t packet(id_ping);
-	user_t::send_r(&packet);
-}
-
-void user_t::send_kicked()
-{
-	packet_t packet(id_conn_closed);
-	user_t::send_r(&packet);
-}
-
-void user_t::send_watching()
-{
-	packet_t packet(id_watching);
-	user_t::send_r(&packet);
+	return enet_peer_send(m_peer, 0, packet->to_enet());
 }
 
 void user_t::send_auth(const std::string& auth)
 {
-	packet_t packet(id_auth);
-	packet.WriteString(auth);
+	opacket_t packet(id_chat_auth);
+	packet.write_string(auth);
 	user_t::send(&packet);
 }
 
 void user_t::send_event(const std::string& text)
 {
-	packet_t packet(id_event);
-	packet.WriteString(text);
+	opacket_t packet(id_chat_event);
+	packet.write_string(text);
 	user_t::send(&packet);
 }
 
 void user_t::send_hudtext(const std::string& text)
 {
-	packet_t packet(id_hudtext_init);
-	packet.WriteString(text);
+	opacket_t packet(id_hudtext_init);
+	packet.write_string(text);
 	user_t::send(&packet);
 }
 
 void user_t::send_unreaded(int count)
 {
-	packet_t packet(id_set_unreaded);
-	packet.Write<int>(count);
+	opacket_t packet(id_chat_unreaded);
+	packet.write<int>(count);
 	user_t::send(&packet);
 }
 
 void user_t::send_notify()
 {
-	packet_t packet(id_notify_play);
-	user_t::send_r(&packet);
+	opacket_t packet(id_notify_play);
+	user_t::send(&packet);
 }
 
 void user_t::send_notify_set(const std::string& url)
 {
-	packet_t packet(id_notify_set_url);
-	packet.WriteString(url);
+	opacket_t packet(id_notify_set_url);
+	packet.write_string(url);
 	user_t::send(&packet);
 }
 
 void user_t::send_notify_play(const std::string& url)
 {
-	packet_t packet(id_notify_play_url);
-	packet.WriteString(url);
+	opacket_t packet(id_notify_play_url);
+	packet.write_string(url);
 	user_t::send(&packet);
 }
 
@@ -139,14 +116,13 @@ void user_t::AddChat(color_t color, const char* fmt, ...)
 	if (count < 0) return;
 	if (count > 512) count = 512;
 	
-	packet_t packet(id_message);
-	packet.Write<id_t>(0);
-	packet.Write<time_t>(time(0));
-	packet.Write<color_t>(color);
-	packet.Write<len_t>(count);
-	packet.Write(buf, count);
-	packet.Write<bool>(false); // notify
-	packet.Write<bool>(false); // resend
+	opacket_t packet(id_chat_message);
+	packet.write<id_t>(0);
+	packet.write<time_t>(time(0));
+	packet.write<color_t>(color);
+	packet.write_string(buf);
+	packet.write<bool>(false); // notify
+	packet.write<bool>(false); // resend
 	user_t::send(&packet);
 }
 
@@ -157,7 +133,7 @@ void user_t::OnConnect()
 	if (m_status < 4)
 		chat.sendf(1, m_id, m_color, "%s {f7f488}подключился", nick());
 
-	_printf("[login] user: %s[%d], ip: %s", m_nick.c_str(), m_id, addr(&m_addr));
+	_printf("[login] user: %s[%d], ip: %s", m_nick.c_str(), m_id, addr(&m_peer->address));
 }
 
 void user_t::OnDisconnect()
@@ -170,12 +146,11 @@ void user_t::OnDisconnect()
 
 	server.on_udn();
 
-	_printf("[logout] user: %s[%d], ip: %s", m_nick.c_str(), m_id, addr(&m_addr));
+	_printf("[logout] user: %s[%d], ip: %s", m_nick.c_str(), m_id, addr(&m_peer->address));
 }
 
 void user_t::OnAuth(const std::string& key)
 {
-	send_watching();
 	send_unreaded(0);
 	send_event("erase");
 	AddChat(0xFFFFFA66, "Подключён к: {ffffff}Sockсhat v1.1 [UDP] ({7070ff}C++{ffffff})");
@@ -200,36 +175,43 @@ void user_t::OnAuth(const std::string& key)
 	send_unreaded(1);
 }
 
-void user_t::OnPacket(packet_t* packet)
+void user_t::OnPacket(ipacket_t* packet)
 {
 	server.m_crypt.decrypt(packet);
 
-	switch (packet->id)
+	packet_id id;
+	packet->read<packet_id>(id);
+
+	switch (id)
 	{
-	case id_conn_closed:
-		server.KickUser(this, false);
-		break;
 	case id_user_auth:
-		OnAuth(packet->ReadString());
+		{
+			std::string data;
+			packet->read_string(data);
+			OnAuth(data);
+		}
 		break;
-	case id_user_chat:
-		OnChat(packet->ReadString());
+	case id_user_input:
+		{
+			std::string data;
+			packet->read_string(data);
+
+			if (data[0] == '/')
+				OnCommand(data);
+			else
+				OnChat(data);
+		}
 		break;
-	case id_user_command:
-		OnCommand(packet->ReadString());
-		break;
-	case id_watching:
+	case id_user_watching:
 		{
 			bool b;
-			packet->Read<bool>(b);
+			packet->read<bool>(b);
 			if (m_watching != b && m_status != 0)
 				server.on_udn();
 			m_watching = b;
 		}
 		break;
 	}
-
-	m_lpr = server.m_time;
 }
 
 void user_t::OnChat(const std::string& text)

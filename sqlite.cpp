@@ -72,7 +72,7 @@ bool sqlite_t::init(const char* filename)
 	errprep(m_db, "update `auth` set `password`=? where `id`=?;",			&m_set_password);
 	errprep(m_db, "select 1 from `blacklist` where `nick`=?;",				&m_find_blacklist);
 	errprep(m_db, "insert into `banip` (`ip`) values (?);",					&m_add_banip);
-	errprep(m_db, "select `ip` from `banip`;",								&m_load_banip);
+	errprep(m_db, "select 1 from `banip` where `ip`=?;",					&m_find_banip);
 
 	return true;
 }
@@ -217,17 +217,12 @@ void sqlite_t::add_banip(const std::string& ip)
 	errstep(m_add_banip, SQLITE_DONE, );
 }
 
-void sqlite_t::load_banip()
+bool sqlite_t::find_banip(const std::string& ip)
 {
-	sqlite3_reset(m_load_banip);
-	sqlite3_clear_bindings(m_load_banip);
-	while (sqlite3_step(m_load_banip) == SQLITE_ROW)
-	{
-		const char* str = (char*)sqlite3_column_text(m_load_banip, 0);
-		in_addr_t addr = inet_addr(str);
-		if (addr != INADDR_NONE)
-			server.add_banip(addr);
-	}
+	sqlite3_reset(m_find_banip);
+	sqlite3_clear_bindings(m_find_banip);
+	sqlite3_bind_text(m_add_banip, 1, ip.c_str(), -1, SQLITE_TRANSIENT);
+	return (sqlite3_step(m_find_banip) == SQLITE_ROW);
 }
 
 #endif

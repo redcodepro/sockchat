@@ -63,7 +63,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
-    <UseOfStl>libstdc++_static</UseOfStl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -164,6 +163,7 @@
   <ItemGroup>
     <ClInclude Include="cmd-handler.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="enet\enet.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="md5.h" />
@@ -177,6 +177,7 @@
     <ClInclude Include="chat-handler.h" />
   </ItemGroup>
   <ItemGroup>
+    <Library Include="enet\libenet.a" />
     <Library Include="sqlite3\libsqlite3.a" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

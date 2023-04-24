@@ -1,7 +1,7 @@
 #pragma once
 
 #define UDP_ADDRESS			"0.0.0.0"
-#define UDP_PORT			7777
+#define UDP_PORT			7778
 
 #define MYSQL_ENABLED		0
 
@@ -18,3 +18,5 @@
 #define LOG_FILENAME		"sockchat.log"
 
 #define CHAT_SEND_NOAUTH	1
+
+#define CHAT_MAX_CLIENTS	1000

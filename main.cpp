@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 	else
 		_g_log.begin(nullptr);
 
-	_printf("[info] Sockchat/UDP v1.1 started");
+	_printf("[info] Sockchat/UDP v1.2 started");
 
 #if (MYSQL_ENABLED == 1)
 	if (!db.init(MYSQL_ADDRESS, MYSQL_USER, MYSQL_PASSWORD, MYSQL_SCHEMA))
@@ -28,7 +28,6 @@ int main(int argc, char* argv[])
 		return 2;
 
 	init_commands();
-	db.load_banip();
 
 	server.exec();
 	

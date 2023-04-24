@@ -26,7 +26,7 @@ private:
 
 	sqlite3_stmt*	m_find_blacklist= nullptr;
 	sqlite3_stmt*	m_add_banip		= nullptr;
-	sqlite3_stmt*	m_load_banip	= nullptr;
+	sqlite3_stmt*	m_find_banip	= nullptr;
 
 public:
 	bool init(const char* filename);
@@ -48,7 +48,7 @@ public:
 
 	bool find_blacklist(const std::string& nick);
 	void add_banip(const std::string& ip);
-	void load_banip();
+	bool find_banip(const std::string& ip);
 };
 
 typedef sqlite_t database_t;
