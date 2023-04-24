@@ -221,7 +221,7 @@ bool sqlite_t::find_banip(const std::string& ip)
 {
 	sqlite3_reset(m_find_banip);
 	sqlite3_clear_bindings(m_find_banip);
-	sqlite3_bind_text(m_add_banip, 1, ip.c_str(), -1, SQLITE_TRANSIENT);
+	sqlite3_bind_text(m_find_banip, 1, ip.c_str(), -1, SQLITE_TRANSIENT);
 	return (sqlite3_step(m_find_banip) == SQLITE_ROW);
 }
 

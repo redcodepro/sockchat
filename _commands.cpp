@@ -102,27 +102,37 @@ void cmd_exit(user_t* user)
 
 void cmd_clear(user_t* user)
 {
+	opacket_t packet(id_chat_erase);
+	packet.write_string("");
+	server.Broadcast(&packet);
+
 	chat.clear();
-	server.AddEventGlobal("erase");
 	chat.pushf(0, 0, 0xFFF02E2E, "Чат очищен администратором.");
 }
 
 void cmd_update(user_t* user)
 {
-	user->send_event("erase");
+	user->send_erase("");
 	chat.send_history(user);
 }
 
 void cmd_erase(user_t* user, const char* text)
 {
 	chat.clear(text);
-	server.AddEventGlobal(std::string("erase=") + text);
+
+	opacket_t packet(id_chat_erase);
+	packet.write_string(text);
+	server.Broadcast(&packet);
 }
 
 void cmd_clearuser(user_t* user, int id)
 {
 	int c = chat.clear_id(id);
-	server.AddEventGlobal(std::string("erase-id=") + std::to_string(id));
+
+	opacket_t packet(id_chat_erase_id);
+	packet.write<id_t>(id);
+	server.Broadcast(&packet);
+
 	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Удалено %d сообщений.", c);
 }
 
@@ -186,8 +196,8 @@ void cmd_kick(user_t* user, int id, const char* reason)
 	if (usr == nullptr)
 		return;
 
+	chat.pushf(1, user->m_id, 0xFFFF6347, "[admin] %s{ff6347}: /kick %s {ffffff}%s", user->nick_c(), usr->nick_c(), reason);
 	server.KickUser(usr);
-	chat.pushf(1, user->m_id, 0xFFFF6347, "Модератор %s {ff6347}кикнул %s{ff6347}. Причина: {ffffff}%s", user->nick_c(), usr->nick_c(), reason);
 }
 
 void cmd_skick(user_t* user, int id)
@@ -196,8 +206,8 @@ void cmd_skick(user_t* user, int id)
 	if (usr == nullptr)
 		return;
 
-	server.KickUser(usr);
 	user->AddChat(0xFFDB0000, ">> %s кикнут.", usr->nick());
+	server.KickUser(usr);
 }
 
 void cmd_ban(user_t* user, int id, const char* reason)
@@ -206,8 +216,8 @@ void cmd_ban(user_t* user, int id, const char* reason)
 	if (usr == nullptr)
 		return;
 
+	chat.pushf(1, user->m_id, 0xFFFF6347, "[admin] %s{ff6347}: /ban %s {ffffff}%s", user->nick_c(), usr->nick_c(), reason);
 	server.MakeBan(usr);
-	chat.pushf(1, user->m_id, 0xFFFF6347, "Модератор %s {ff6347}забанил %s{ff6347}. Причина: {ffffff}%s", user->nick_c(), usr->nick_c(), reason);
 }
 
 void cmd_banip(user_t* user, int id, const char* reason)
@@ -216,8 +226,8 @@ void cmd_banip(user_t* user, int id, const char* reason)
 	if (usr == nullptr)
 		return;
 
+	chat.pushf(1, user->m_id, 0xFFFF6347, "[admin] %s{ff6347}: /banip %s {ffffff}%s", user->nick_c(), usr->nick_c(), reason);
 	server.MakeBanIP(usr);
-	chat.pushf(1, user->m_id, 0xFFCC1F00, "Модератор %s {ff6347}забанил %s{cc1f00}. Причина: {ffffff}%s", user->nick_c(), usr->nick_c(), reason);
 }
 
 void cmd_destroy(user_t* user, int id)

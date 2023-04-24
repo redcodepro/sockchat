@@ -78,6 +78,7 @@ std::vector<std::string> split(const std::string& in, char delimiter, bool allow
 int string_replace_all(std::string& str, const char* from, const char* to);
 std::string md5(const std::string& in);
 const char* addr(ENetAddress* addr);
+std::string addr_ip(ENetAddress* addr);
 void init_commands();
 std::string urlencode(const std::string& in);
 std::string find_audio_url(const std::string& name);

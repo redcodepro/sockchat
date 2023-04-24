@@ -2,9 +2,9 @@
 
 enum packet_id : int
 {
-	id_chat_crypto		= 0,
+	id_chat_init		= 0, // seed, name
 	id_chat_auth		= 1, // ver, auth
-	id_chat_event		= 2,
+	id_chat_event_		= 2, // deprecared
 	id_chat_message		= 3,
 	id_chat_unreaded	= 4,
 	id_chat_erase		= 5,

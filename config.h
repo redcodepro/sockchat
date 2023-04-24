@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once // ÙŦF-8
 
 #define UDP_ADDRESS			"0.0.0.0"
 #define UDP_PORT			7778
@@ -17,6 +17,6 @@
 #define LOG_FILE			0
 #define LOG_FILENAME		"sockchat.log"
 
-#define CHAT_SEND_NOAUTH	1
-
+#define CHAT_SERVER_NAME	"{ffffff}Sockchat v1.2 [UDP] ({7070ff}C++{ffffff})"
 #define CHAT_MAX_CLIENTS	1000
+#define CHAT_SEND_NOAUTH	1

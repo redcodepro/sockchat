@@ -50,23 +50,16 @@ void user_t::logout()
 	user_t::send_auth("");
 }
 
-int user_t::send(opacket_t* packet)
+void user_t::send(opacket_t* packet)
 {
 	server.m_crypt.encrypt(packet);
-	return enet_peer_send(m_peer, 0, packet->to_enet());
+	enet_peer_send(m_peer, 0, packet->to_enet());
 }
 
 void user_t::send_auth(const std::string& auth)
 {
 	opacket_t packet(id_chat_auth);
 	packet.write_string(auth);
-	user_t::send(&packet);
-}
-
-void user_t::send_event(const std::string& text)
-{
-	opacket_t packet(id_chat_event);
-	packet.write_string(text);
 	user_t::send(&packet);
 }
 
@@ -101,6 +94,20 @@ void user_t::send_notify_play(const std::string& url)
 {
 	opacket_t packet(id_notify_play_url);
 	packet.write_string(url);
+	user_t::send(&packet);
+}
+
+void user_t::send_erase(const std::string& text)
+{
+	opacket_t packet(id_chat_erase);
+	packet.write_string(text);
+	user_t::send(&packet);
+}
+
+void user_t::send_erase(id_t id)
+{
+	opacket_t packet(id_chat_erase);
+	packet.write<id_t>(id);
 	user_t::send(&packet);
 }
 
@@ -151,9 +158,7 @@ void user_t::OnDisconnect()
 
 void user_t::OnAuth(const std::string& key)
 {
-	send_unreaded(0);
-	send_event("erase");
-	AddChat(0xFFFFFA66, "Подключён к: {ffffff}Sockсhat v1.1 [UDP] ({7070ff}C++{ffffff})");
+	//send_erase("");
 
 	if (key_is_valid(key))
 	{

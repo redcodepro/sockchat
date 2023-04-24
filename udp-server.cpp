@@ -25,12 +25,9 @@ void udpserver_t::exec()
 		{
 		case ENET_EVENT_TYPE_CONNECT:
 			{
-				char ip[256];
-				enet_address_get_host_ip(&ev.peer->address, ip, 256);
-
-				if (db.find_banip(ip))
+				if (db.find_banip(addr_ip(&ev.peer->address)))
 				{
-					enet_peer_disconnect_now(ev.peer, 0);
+					enet_peer_disconnect_later(ev.peer, 1);
 					break;
 				}
 
@@ -39,8 +36,9 @@ void udpserver_t::exec()
 					ev.peer->data = user;
 					m_users.insert(std::pair(ev.peer, user));
 
-					opacket_t packet(id_chat_crypto);
+					opacket_t packet(id_chat_init);
 					packet.write<unsigned int>(m_crypt.seed());
+					packet.write_string(CHAT_SERVER_NAME);
 					enet_peer_send(ev.peer, 0, packet.to_enet());
 				}
 			}
@@ -101,13 +99,6 @@ void udpserver_t::Broadcast(opacket_t* packet, int level)
 	}
 }
 
-void udpserver_t::AddEventGlobal(const std::string& text)
-{
-	opacket_t packet(id_chat_event);
-	packet.write_string(text);
-	Broadcast(&packet);
-}
-
 void udpserver_t::KickUser(user_t* user, bool send_closed)
 {
 	enet_peer_disconnect_later(user->m_peer, 0);
@@ -121,7 +112,7 @@ void udpserver_t::MakeBan(user_t* user)
 
 void udpserver_t::MakeBanIP(user_t* user)
 {
-	//db.add_banip(0);
+	db.add_banip(addr_ip(&user->m_peer->address));
 	MakeBan(user);
 }
 

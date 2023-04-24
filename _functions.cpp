@@ -198,6 +198,13 @@ const char* addr(ENetAddress* addr)
 	return buf;
 }
 
+std::string addr_ip(ENetAddress* addr)
+{
+	char ip[256];
+	enet_address_get_host_ip(addr, ip, 256);
+	return ip;
+}
+
 std::string urlencode(const std::string& in)
 {
 	std::string out;
