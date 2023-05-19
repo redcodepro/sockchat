@@ -3,7 +3,7 @@
 bool udpserver_t::bind(const char* ipv4, uint16_t port)
 {
 	m_addr.host = ENET_HOST_ANY;
-	m_addr.port = 7778;
+	m_addr.port = port;
 
 	m_server = enet_host_create(&m_addr, CHAT_MAX_CLIENTS, 2, 0, 0);
 
