@@ -10,7 +10,7 @@
 	}
 
 #define errexec(db, query) \
-		errlog(sqlite3_exec(db, query, 0, 0, 0))
+	errlog(sqlite3_exec(db, query, 0, 0, 0))
 
 #define errprep(db, query, stmt) \
 	errlog(sqlite3_prepare_v2(db, query, -1, stmt, NULL))

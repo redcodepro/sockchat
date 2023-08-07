@@ -25,6 +25,13 @@ typedef struct _server_config_t
 	int			slots = 500;
 	std::string logfile = "";
 
+	std::string mysql_address	= "localhost";
+	std::string mysql_user		= "sockchat";
+	std::string mysql_pass		= "12345678";
+	std::string mysql_schema	= "sockchat";
+
+	std::string sqlite_filename	= "sockchat.db";
+
 	void load_cmdline(int argc, char** argv);
 } server_config_t;
 

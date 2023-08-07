@@ -85,6 +85,13 @@ void server_config_t::load_cmdline(int argc, char** argv)
 			try { this->port = std::stoi(argv[++i]); }
 			catch (...) {}
 		}
+		else if (v == "-sqlite")
+		{
+			if ((i + 1) >= argc)
+				break;
+
+			this->sqlite_filename = argv[++i];
+		}
 	}
 }
 
