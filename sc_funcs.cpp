@@ -104,5 +104,5 @@ void server_config_t::load_cmdline(int argc, char** argv)
 
 bool redirect_stdout(const char* filename)
 {
-	return freopen(filename, "w", stdout) != NULL;
+	return freopen(filename, "a", stdout) != NULL;
 }
