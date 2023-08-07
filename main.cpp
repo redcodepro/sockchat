@@ -8,12 +8,12 @@ server_config_t cfg;
 
 int main(int argc, char* argv[])
 {
-	_printf("[info] Sockchat/UDP v1.2 started");
-
 	cfg.load_cmdline(argc, argv);
 
 	if (!cfg.logfile.empty() && !redirect_stdout(cfg.logfile.c_str()))
 		return 1;
+
+	_printf("\n\n[info] Sockchat/UDP v2.0 started");
 
 	if (cfg.port < 0 || cfg.port > 65535)
 	{

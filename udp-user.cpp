@@ -176,7 +176,6 @@ void user_t::OnAuth(const std::string& key)
 	AddChat(0xFFFFFA66, "    \uf0a4    /auth {ffffff}<nick> <pass> {fffa66}- для авторизации");
 	AddChat(0xFFFFFA66, "    \uf0a4    /register {ffffff}<nick> <pass> {fffa66}- для регистрации");
 	AddChat(0xFFFFFA66, "");
-	AddChat(0xFF00FF00, "[Информация] {ffffff}Аккаунты перенесены с WebChat-a.");
 	send_unreaded(1);
 }
 

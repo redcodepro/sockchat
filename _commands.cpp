@@ -63,7 +63,7 @@ void cmd_setpass(user_t* user, const char* pass)
 	}
 
 	db.set_password(user->m_id, md5(pass));
-	user->AddChat(0xFF9CFF9F, "Пароль изменён на {FFFFFF}\"%s\"{9cff9f}. Используйте {FFFFFF}F8 {9cff9f}что-бы сохранить.", pass);
+	user->AddChat(0xFF9CFF9F, "Пароль изменён на {FFFFFF}\"%s\"{9cff9f}. Используйте {FFFFFF}F8 {9cff9f}чтобы сохранить.", pass);
 }
 
 void cmd_help(user_t* user)
