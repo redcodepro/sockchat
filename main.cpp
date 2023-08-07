@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
 
 	if (cfg.port < 0 || cfg.port > 65535)
 	{
-		_printf("[error] incorrect port value (0 - 65525)");
+		_printf("[error] incorrect port value (0 - 65535)");
 		return 2;
 	}
 

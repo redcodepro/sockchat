@@ -18,7 +18,7 @@ std::string format_out(const std::string& in, bool remove_color)
 		
 		result += c;
 		
-		if (result.size() >= 128)
+		if (result.size() > 255)
 			break;
 	}
 
@@ -55,6 +55,21 @@ std::string format_out(const std::string& in, bool remove_color)
 void udpserver_t::send_online()
 {
 	time_t _time = time(0);
+
+	static time_t _prev = 0;
+	if (_prev != _time)
+	{
+		for (auto& [peer, user] : m_users)
+		{
+			if (user->m_rainbow)
+			{
+				user->m_color = create_color();
+				user->udn();
+			}
+		}
+		_prev = _time;
+	}
+
 	// update period: 30s or onchange
 	if ((_time - m_lou) < 30)
 		return;
@@ -65,10 +80,8 @@ void udpserver_t::send_online()
 	int total = 0;
 	std::string online;
 
-	for (auto& it : m_users)
+	for (auto& [peer, user] : m_users)
 	{
-		user_t* user = it.second;
-
 		if (user->m_status == 0)
 		{
 			// nope

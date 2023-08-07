@@ -393,8 +393,8 @@ void init_commands()
 	cmds.add({ "reg", "register" },		new cmd_t{ 0, (void*)cmd_register,	"ss",	"<nick> <pass>"	});
 	cmds.add({ "auth", "login" },		new cmd_t{ 0, (void*)cmd_auth,		"ss",	"<nick> <pass>"	});
 	cmds.add({ "setpass", "passwd" },	new cmd_t{ 1, (void*)cmd_setpass,	"s",	"<pass>"		});
-//	cmds.add({ "ping" },				new cmd_t{ 1, (void*)cmd_ping,		"",		""				});
-//	cmds.add({ "time" },				new cmd_t{ 1, (void*)cmd_time,		"",		""				});
+	cmds.add({ "ping" },				new cmd_t{ 1, (void*)cmd_ping,		"",		""				});
+	cmds.add({ "time" },				new cmd_t{ 1, (void*)cmd_time,		"",		""				});
 	cmds.add({ "help" },				new cmd_t{ 1, (void*)cmd_help,		"",		""				});
 	cmds.add({ "msg", "pm", "sms" },	new cmd_t{ 1, (void*)cmd_msg,		"d*",	"<id> <text>"	});
 	cmds.add({ "re", "r" },				new cmd_t{ 1, (void*)cmd_msg_re,	"*",	"<text>"		});
@@ -402,7 +402,7 @@ void init_commands()
 	cmds.add({ "do" },					new cmd_t{ 1, (void*)cmd_do,		"*",	"<text>"		});
 	cmds.add({ "exit", "quit" },		new cmd_t{ 2, (void*)cmd_exit,		"",		""				});
 	cmds.add({ "update" },				new cmd_t{ 2, (void*)cmd_update,	"",		""				});
-//	cmds.add({ "vr", "vip" },			new cmd_t{ 2, (void*)cmd_chat_vip,	"*",	"<text>"		});
+	cmds.add({ "vr", "vip" },			new cmd_t{ 2, (void*)cmd_chat_vip,	"*",	"<text>"		});
 	cmds.add({ "a" },					new cmd_t{ 3, (void*)cmd_chat_adm,	"*",	"<text>"		});
 	cmds.add({ "g", "ao" },				new cmd_t{ 3, (void*)cmd_chat_all,	"*",	"<text>"		});
 	cmds.add({ "erase" },				new cmd_t{ 3, (void*)cmd_erase,		"*",	"<text>"		});
@@ -420,7 +420,7 @@ void init_commands()
 	cmds.add({ "rainbow", "makegay" },	new cmd_t{ 5, (void*)cmd_rainbow,	"d",	"<id>"			});
 	cmds.add({ "hideme" },				new cmd_t{ 4, (void*)cmd_hideme,	"",		""				});
 	cmds.add({ "notify" },				new cmd_t{ 1, (void*)cmd_notify,	"",		""				});
-//	cmds.add({ "notify_set" },			new cmd_t{ 5, (void*)cmd_setnotify,	"*",	"<name>"		});
+	cmds.add({ "notify_set" },			new cmd_t{ 5, (void*)cmd_setnotify,	"*",	"<name>"		});
 	cmds.add({ "play" },				new cmd_t{ 5, (void*)cmd_playnotify,"*",	"<name>"		});
 	cmds.add({ "tts", "say" },			new cmd_t{ 5, (void*)cmd_tts_all,	"*",	"<text>"		});
 
