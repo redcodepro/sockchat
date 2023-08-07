@@ -125,27 +125,8 @@ void udpserver_t::SendPM(user_t* src, user_t* dst, const char* message)
 	dst->m_xid = src->m_id;
 	dst->send_notify();
 
-	_printf("[private] [%s >> %s] %s", src->m_nick.c_str(), dst->m_nick.c_str(), message);
-}
-
-void udpserver_t::NotifyAll(int level)
-{
-	/*packet_t packet(id_notify_play);
-	for (auto& it : m_users)
-	{
-		user_t* user = it.second;
-
-		if (user->m_status < level)
-			continue;
-
-		if (user->m_notify == false)
-			continue;
-
-		if (user->m_watching == true)
-			continue;
-
-		sendto(&packet, &user->m_addr);
-	}*/
+	// pro rp seks v pm nikto ne uznaet!!!
+	// _printf("[private] [%s >> %s] %s", src->m_nick.c_str(), dst->m_nick.c_str(), message);
 }
 
 void udpserver_t::NotifySet(const std::string& url)

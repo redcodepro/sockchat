@@ -184,8 +184,8 @@ void user_t::OnPacket(ipacket_t* packet)
 {
 	server.m_crypt.decrypt(packet);
 
-	packet_id id;
-	packet->read<packet_id>(id);
+	int id = 0;
+	packet->read<packet_id>((packet_id&)id);
 
 	switch (id)
 	{

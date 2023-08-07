@@ -33,7 +33,7 @@ void opacket_t::write(const void* src, size_t n)
 
 void opacket_t::write_string(const std::string& in)
 {
-	write<uint32_t>(in.size());
+	write<uint32_t>((uint32_t)in.size());
 	write(in.data(), in.size());
 }
 

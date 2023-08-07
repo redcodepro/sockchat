@@ -11,7 +11,7 @@ private:
 	udpusers_t	m_users;
 	udpcrypt_t	m_crypt;
 	std::string	m_name;
-	time_t		m_lou; // last online update
+	time_t		m_lou = 0; // last online update
 
 	void send_online();
 public:

@@ -52,7 +52,7 @@ private:
 		{
 			if (sscanf_args[i] != nullptr
 				&& sscanf_args[i] != &args.args[i])
-				delete sscanf_args[i];
+				delete[] sscanf_args[i];
 			sscanf_args[i] = nullptr;
 		}
 	}

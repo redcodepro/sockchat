@@ -93,7 +93,7 @@ int sqlite_t::add_user(const std::string& nick, const std::string& pass)
 	sqlite3_bind_text(m_add_user_1, 1, nick.c_str(), -1, SQLITE_TRANSIENT);
 	errstep(m_add_user_1, SQLITE_DONE, -1);
 
-	sqlite_int64 id = sqlite3_last_insert_rowid(m_db);
+	int id = static_cast<int>(sqlite3_last_insert_rowid(m_db));
 
 	sqlite3_reset(m_add_user_2);
 	sqlite3_clear_bindings(m_add_user_2);

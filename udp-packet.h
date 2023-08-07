@@ -24,13 +24,15 @@ enum packet_id : int
 	id_notify_set_url	= 33,
 };
 
+static_assert(sizeof(packet_id) == sizeof(int));
+
 class ipacket_t
 {
 	friend class udpcrypt_t;
 private:
-	size_t len;
-	size_t pos;
-	uint8_t* data;
+	uint8_t*	data;
+	size_t		len;
+	size_t		pos;
 public:
 	ipacket_t(uint8_t* _data, size_t _len) : data(_data), len(_len), pos(0) {}
 	ipacket_t(ENetPacket* packet) : ipacket_t(packet->data, packet->dataLength) {}
