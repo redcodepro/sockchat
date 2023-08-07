@@ -17,13 +17,13 @@ int main(int argc, char* argv[])
 
 	if (cfg.port < 0 || cfg.port > 65535)
 	{
-		printf("[error] incorrect port value (0 - 65525)\n");
+		_printf("[error] incorrect port value (0 - 65525)");
 		return 2;
 	}
 
 	if (cfg.slots < 2 || cfg.slots > 4096)
 	{
-		printf("[error] incorrect slots value (2 - 4096)\n");
+		_printf("[error] incorrect slots value (2 - 4096)");
 		return 2;
 	}
 

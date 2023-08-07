@@ -23,7 +23,7 @@
 
 #include "sc_types.h"
 
-#define _printf printf
+#define _printf(fmt, ...) (fprintf(stdout, fmt "\n", ## __VA_ARGS__), fflush(stdout))
 #define _delete(p) if (p) { delete p; p = nullptr; }
 
 typedef ENetPeer* peer_t;

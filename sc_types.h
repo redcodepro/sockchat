@@ -20,9 +20,9 @@ std::string urlencode(std::string in);
 
 typedef struct _server_config_t
 {
-	std::string name = "Sockchat LUA v0.1-alpha";
+	std::string name = "{ffffff}Sockchat v2.0 ({7070ff}C++{ffffff})";
 	int			port = 8000;
-	int			slots = 100;
+	int			slots = 500;
 	std::string logfile = "";
 
 	void load_cmdline(int argc, char** argv);
