@@ -24,6 +24,7 @@ typedef struct _server_config_t
 	int			port = 8000;
 	int			slots = 500;
 	std::string logfile = "";
+	std::string audio_folder = "http://192.168.8.128/audio/";
 
 	std::string mysql_address	= "localhost";
 	std::string mysql_user		= "sockchat";

@@ -92,6 +92,13 @@ void server_config_t::load_cmdline(int argc, char** argv)
 
 			this->sqlite_filename = argv[++i];
 		}
+		else if (v == "-audio")
+		{
+			if ((i + 1) >= argc)
+				break;
+
+			this->audio_folder = argv[++i];
+		}
 	}
 }
 

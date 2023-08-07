@@ -196,5 +196,5 @@ std::string find_audio_url(const std::string& name)
 		return "";
 	if (!(s.st_mode & S_IFREG))
 		return "";
-	return std::string("http://xcht.tk/audio/" + f);
+	return cfg.audio_folder + f;
 }
