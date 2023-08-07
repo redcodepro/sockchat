@@ -24,10 +24,6 @@ enum packet_id : int
 	id_notify_set_url	= 33,
 };
 
-typedef unsigned short len_t;
-typedef unsigned int color_t;
-typedef unsigned int id_t;
-
 class ipacket_t
 {
 	friend class udpcrypt_t;
@@ -62,7 +58,3 @@ public:
 
 	ENetPacket* to_enet(enet_uint32 flags = ENET_PACKET_FLAG_RELIABLE);
 };
-
-static_assert(sizeof(id_t) == 4);
-static_assert(sizeof(len_t) == 2);
-static_assert(sizeof(color_t) == 4);

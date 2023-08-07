@@ -148,8 +148,8 @@
   <ItemGroup>
     <ClCompile Include="chat-handler.cpp" />
     <ClCompile Include="cmd-handler.cpp" />
-    <ClCompile Include="log.cpp" />
     <ClCompile Include="md5.cpp" />
+    <ClCompile Include="sc_funcs.cpp" />
     <ClCompile Include="sqlite.cpp" />
     <ClCompile Include="udp-cryptor.cpp" />
     <ClCompile Include="udp-server.cpp" />
@@ -164,9 +164,9 @@
     <ClInclude Include="cmd-handler.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="enet\enet.h" />
-    <ClInclude Include="log.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="md5.h" />
+    <ClInclude Include="sc_types.h" />
     <ClInclude Include="sqlite.h" />
     <ClInclude Include="sqlite3\sqlite3.h" />
     <ClInclude Include="udp-cryptor.h" />

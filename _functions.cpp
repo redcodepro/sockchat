@@ -1,30 +1,5 @@
 ﻿#include "main.h" // ÙŦF-8
 
-std::string create_key(std::size_t len)
-{
-	std::string result;
-	srand(time(0) + rand());
-	do
-	{
-		char c = (char)(rand() & 0xFF);
-		if ((c >= '0' && c <= '9')
-			|| (c >= 'A' && c <= 'Z')
-			|| (c >= 'a' && c <= 'z'))
-			result.push_back(c);
-	} while (result.size() != len);
-	return result;
-}
-
-color_t create_color()
-{
-	color_t result = 0xFF000000;
-	srand(time(0) + rand());
-	result |= (rand() & 0xFF) << 8 * 2;
-	result |= (rand() & 0xFF) << 8 * 1;
-	result |= (rand() & 0xFF) << 8 * 0;
-	return result;
-}
-
 void trim(std::string& s)
 {
 	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) { return !std::isspace(ch); }));
@@ -181,13 +156,6 @@ int string_replace_all(std::string& str, const char* from, const char* to)
 	return count;
 };
 
-std::string md5(const std::string& in)
-{
-	MD5 hash;
-	hash.add(in.data(), in.size());
-	return hash.getHash();
-}
-
 const char* addr(ENetAddress* addr)
 {
 	char ip[256];
@@ -203,29 +171,6 @@ std::string addr_ip(ENetAddress* addr)
 	char ip[256];
 	enet_address_get_host_ip(addr, ip, 256);
 	return ip;
-}
-
-std::string urlencode(const std::string& in)
-{
-	std::string out;
-
-	for (const char& c : in)
-	{
-		if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
-			c == '-' || c == '_' || c == '.' ||
-			c == '!' || c == '~' || c == '*' ||
-			c == '\'' || c == '(' || c == ')')
-		{
-			out += c;
-		}
-		else
-		{
-			char buf[32];
-			sprintf(buf, "%%%02hhx", c);
-			out += buf;
-		}
-	}
-	return out;
 }
 
 std::string find_audio_url(const std::string& name)

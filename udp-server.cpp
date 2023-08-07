@@ -1,19 +1,20 @@
 ﻿#include "main.h" // ÙŦF-8
 
-bool udpserver_t::bind(const char* ipv4, uint16_t port)
+bool udpserver_t::init(server_config_t* cfg)
 {
-	m_addr.host = ENET_HOST_ANY;
-	m_addr.port = port;
+	m_name = cfg->name;
 
-	m_server = enet_host_create(&m_addr, CHAT_MAX_CLIENTS, 2, 0, 0);
+	m_addr.host = ENET_HOST_ANY;
+	m_addr.port = static_cast<enet_uint16>(cfg->port);
+
+	m_server = enet_host_create(&m_addr, cfg->slots, 2, 0, 0);
 
 	return (m_server != nullptr);
 }
 
 void udpserver_t::exec()
 {
-	srand(time(0));
-	srand(time(0) + rand());
+	_srand();
 	m_crypt.init(rand());
 
 	_printf("[info] Server running at: %s", addr(&m_addr));
@@ -38,7 +39,7 @@ void udpserver_t::exec()
 
 					opacket_t packet(id_chat_init);
 					packet.write<unsigned int>(m_crypt.seed());
-					packet.write_string(CHAT_SERVER_NAME);
+					packet.write_string(m_name);
 					enet_peer_send(ev.peer, 0, packet.to_enet());
 				}
 			}

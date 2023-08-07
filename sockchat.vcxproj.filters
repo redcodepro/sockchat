@@ -16,9 +16,6 @@
     <ClCompile Include="md5.cpp">
       <Filter>external</Filter>
     </ClCompile>
-    <ClCompile Include="log.cpp">
-      <Filter>external</Filter>
-    </ClCompile>
     <ClCompile Include="udp-cryptor.cpp" />
     <ClCompile Include="mysql.cpp">
       <Filter>external</Filter>
@@ -26,6 +23,7 @@
     <ClCompile Include="sqlite.cpp">
       <Filter>sqlite3</Filter>
     </ClCompile>
+    <ClCompile Include="sc_funcs.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
@@ -39,9 +37,6 @@
       <Filter>handlers</Filter>
     </ClInclude>
     <ClInclude Include="md5.h">
-      <Filter>external</Filter>
-    </ClInclude>
-    <ClInclude Include="log.h">
       <Filter>external</Filter>
     </ClInclude>
     <ClInclude Include="udp-cryptor.h" />
@@ -58,6 +53,7 @@
     <ClInclude Include="sqlite3\sqlite3.h">
       <Filter>sqlite3\lib</Filter>
     </ClInclude>
+    <ClInclude Include="sc_types.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="handlers">

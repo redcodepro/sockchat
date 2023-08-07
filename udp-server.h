@@ -10,6 +10,7 @@ private:
 	ENetAddress m_addr = { 0 };
 	udpusers_t	m_users;
 	udpcrypt_t	m_crypt;
+	std::string	m_name;
 	time_t		m_lou; // last online update
 
 	void send_online();
@@ -17,7 +18,7 @@ public:
 	udpserver_t() { enet_initialize(); };
 	~udpserver_t() { enet_deinitialize(); };
 
-	bool bind(const char* ipv4, uint16_t port);
+	bool init(server_config_t* cfg);
 	void exec();
 
 	//////////////////////////////////////////
