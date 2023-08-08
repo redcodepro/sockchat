@@ -37,3 +37,4 @@ typedef struct _server_config_t
 } server_config_t;
 
 bool redirect_stdout(const char* filename);
+void __printf_stdout(const char* fmt, ...);

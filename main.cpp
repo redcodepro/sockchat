@@ -13,7 +13,8 @@ int main(int argc, char* argv[])
 	if (!cfg.logfile.empty() && !redirect_stdout(cfg.logfile.c_str()))
 		return 1;
 
-	_printf("\n\n[info] Sockchat/UDP v2.0 started");
+	puts("\n\n");
+	_printf("[info] Sockchat/UDP v2.0 started");
 
 	if (cfg.port < 0 || cfg.port > 65535)
 	{

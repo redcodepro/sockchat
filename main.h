@@ -23,7 +23,7 @@
 
 #include "sc_types.h"
 
-#define _printf(fmt, ...) (fprintf(stdout, fmt "\n", ## __VA_ARGS__), fflush(stdout))
+#define _printf __printf_stdout
 #define _delete(p) if (p) { delete p; p = nullptr; }
 
 typedef ENetPeer* peer_t;
@@ -34,7 +34,7 @@ namespace std {
 	{
 		std::size_t operator()(const peer_t& k) const
 		{
-			return *(std::size_t*)(&k);
+			return (std::size_t&)(k);
 		}
 	};
 }

@@ -1,6 +1,7 @@
 #include "sc_types.h"
 #include "md5.h"
 #include <stdio.h>
+#include <stdarg.h>
 
 void _srand()
 {
@@ -105,4 +106,21 @@ void server_config_t::load_cmdline(int argc, char** argv)
 bool redirect_stdout(const char* filename)
 {
 	return freopen(filename, "a", stdout) != NULL;
+}
+
+void __printf_stdout(const char* fmt, ...)
+{
+	time_t time_ = time(0);
+	struct tm tm_;
+	localtime_r(&time_, &tm_);
+
+	fprintf(stdout, "[%02d:%02d:%02d] ", tm_.tm_hour, tm_.tm_min, tm_.tm_sec);
+
+	va_list va;
+	va_start(va, fmt);
+	vfprintf(stdout, fmt, va);
+	va_end(va);
+
+	fprintf(stdout, "\n");
+	fflush(stdout);
 }
