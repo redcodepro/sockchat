@@ -6,7 +6,7 @@ class udpserver_t
 {
 	friend class user_t;
 private:
-	ENetHost*	m_server = nullptr;
+	ENetHost*	m_host = nullptr;
 	ENetAddress m_addr = { 0 };
 	udpusers_t	m_users;
 	udpcrypt_t	m_crypt;
@@ -14,6 +14,7 @@ private:
 	time_t		m_lou = 0; // last online update
 
 	void send_online();
+	void handle_event(ENetEvent* ev);
 public:
 	udpserver_t() { enet_initialize(); };
 	~udpserver_t() { enet_deinitialize(); };

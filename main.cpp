@@ -34,11 +34,7 @@ int main(int argc, char* argv[])
 		return 3;
 	}
 
-#if (MYSQL_ENABLED == 1)
-	if (!db.init(MYSQL_ADDRESS, MYSQL_USER, MYSQL_PASSWORD, MYSQL_SCHEMA))
-#else
 	if (!db.init(cfg.sqlite_filename.c_str()))
-#endif
 	{
 		_printf("[error] Failed to init database.");
 		return 4;

@@ -88,5 +88,8 @@
     <Library Include="sqlite3\libsqlite3.a">
       <Filter>sdk\sqlite</Filter>
     </Library>
+    <Library Include="enet\libenet.a">
+      <Filter>sdk\enet</Filter>
+    </Library>
   </ItemGroup>
 </Project>

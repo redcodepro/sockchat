@@ -7,9 +7,9 @@ bool udpserver_t::init(server_config_t* cfg)
 	m_addr.host = ENET_HOST_ANY;
 	m_addr.port = static_cast<enet_uint16>(cfg->port);
 
-	m_server = enet_host_create(&m_addr, cfg->slots, 2, 0, 0);
+	m_host = enet_host_create(&m_addr, cfg->slots, 2, 0, 0);
 
-	return (m_server != nullptr);
+	return (m_host != nullptr);
 }
 
 void udpserver_t::exec()
@@ -17,61 +17,23 @@ void udpserver_t::exec()
 	_srand();
 	m_crypt.init(rand());
 
-	_printf("[info] Server running at: %s", addr(&m_addr));
+	_printf("[info] Server running at 0.0.0.0:%hu", m_addr.port);
 
-	ENetEvent ev;
-	while (enet_host_service(m_server, &ev, 500) >= 0)
+	while (true)
 	{
-		switch (ev.type)
+		ENetEvent ev;
+
+		int result = enet_host_service(m_host, &ev, 500);
+		if (result < 0)
 		{
-		case ENET_EVENT_TYPE_CONNECT:
-			{
-				if (db.find_banip(addr_ip(&ev.peer->address)))
-				{
-					enet_peer_disconnect_later(ev.peer, 1);
-					break;
-				}
+			static int count = 0;
+			if (++count > 100)
+				break;
 
-				if (user_t* user = new user_t(ev.peer))
-				{
-					ev.peer->data = user;
-					m_users.insert(std::pair(ev.peer, user));
-
-					opacket_t packet(id_chat_init);
-					packet.write<unsigned int>(m_crypt.seed());
-					packet.write_string(m_name);
-					enet_peer_send(ev.peer, 0, packet.to_enet());
-				}
-			}
-			break;
-
-		case ENET_EVENT_TYPE_RECEIVE:
-			{
-				if (user_t* user = (user_t*)ev.peer->data)
-				{
-					ipacket_t packet(ev.packet);
-					user->OnPacket(&packet);
-				}
-
-				enet_packet_destroy(ev.packet);
-			}
-			break;
-
-		case ENET_EVENT_TYPE_DISCONNECT:
-		case ENET_EVENT_TYPE_DISCONNECT_TIMEOUT:
-			{
-				if (user_t* user = (user_t*)ev.peer->data)
-				{
-					m_users.erase(ev.peer);
-					user->OnDisconnect();
-					delete user;
-				}
-			}
-			break;
-
-		case ENET_EVENT_TYPE_NONE:
-			break;
+			_printf("[error] Service failed %d times. uc: %d", count, m_users.size());
 		}
+
+		handle_event(&ev);
 
 		send_online(); // ????
 	}
@@ -79,12 +41,62 @@ void udpserver_t::exec()
 	_printf("[info] Server stopped");
 }
 
+void udpserver_t::handle_event(ENetEvent* ev)
+{
+	switch (ev->type)
+	{
+	case ENET_EVENT_TYPE_NONE:
+		break;
+
+	case ENET_EVENT_TYPE_CONNECT:
+		{
+			if (db.find_banip(addr_ip(&ev->peer->address)))
+			{
+				enet_peer_disconnect_later(ev->peer, 1);
+				break;
+			}
+
+			if (user_t* user = new user_t(ev->peer))
+			{
+				ev->peer->data = user;
+				m_users.insert(std::pair(ev->peer, user));
+
+				opacket_t packet(id_chat_init);
+				packet.write<unsigned int>(m_crypt.seed());
+				packet.write_string(m_name);
+				enet_peer_send(ev->peer, 0, packet.to_enet());
+			}
+		}
+		break;
+
+	case ENET_EVENT_TYPE_DISCONNECT:
+	case ENET_EVENT_TYPE_DISCONNECT_TIMEOUT:
+		{
+			if (user_t* user = (user_t*)ev->peer->data)
+			{
+				m_users.erase(ev->peer);
+				user->OnDisconnect();
+				delete user;
+			}
+		}
+		break;
+
+	case ENET_EVENT_TYPE_RECEIVE:
+		{
+			if (user_t* user = (user_t*)ev->peer->data)
+			{
+				ipacket_t packet(ev->packet);
+				user->OnPacket(&packet);
+			}
+
+			enet_packet_destroy(ev->packet);
+		}
+		break;
+	}
+}
+
 void udpserver_t::Broadcast(opacket_t* packet, int level)
 {
-#if (CHAT_SEND_NOAUTH == 1)
-	if (level == 1)
-		level = 0;
-#endif
 	m_crypt.encrypt(packet);
 
 	ENetPacket* ep = packet->to_enet();
