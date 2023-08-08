@@ -19,8 +19,6 @@
 #define ENET_STATIC
 #include "enet/enet.h"
 
-#include "config.h"
-
 #include "sc_types.h"
 
 #define _printf __printf_stdout
@@ -49,7 +47,6 @@ struct userdata_t
 };
 
 #include "udp-packet.h"
-#include "mysql.h"
 #include "sqlite.h"
 #include "udp-cryptor.h"
 #include "udp-user.h"

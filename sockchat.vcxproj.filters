@@ -17,9 +17,6 @@
       <Filter>external</Filter>
     </ClCompile>
     <ClCompile Include="udp-cryptor.cpp" />
-    <ClCompile Include="mysql.cpp">
-      <Filter>external</Filter>
-    </ClCompile>
     <ClCompile Include="sqlite.cpp">
       <Filter>sqlite3</Filter>
     </ClCompile>
@@ -40,10 +37,6 @@
       <Filter>external</Filter>
     </ClInclude>
     <ClInclude Include="udp-cryptor.h" />
-    <ClInclude Include="mysql.h">
-      <Filter>external</Filter>
-    </ClInclude>
-    <ClInclude Include="config.h" />
     <ClInclude Include="enet\enet.h">
       <Filter>enet</Filter>
     </ClInclude>

@@ -153,7 +153,6 @@
     <ClCompile Include="sqlite.cpp" />
     <ClCompile Include="udp-cryptor.cpp" />
     <ClCompile Include="udp-server.cpp" />
-    <ClCompile Include="mysql.cpp" />
     <ClCompile Include="_commands.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="udp-packet.cpp" />
@@ -162,7 +161,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cmd-handler.h" />
-    <ClInclude Include="config.h" />
     <ClInclude Include="enet\enet.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="md5.h" />
@@ -173,7 +171,6 @@
     <ClInclude Include="udp-user.h" />
     <ClInclude Include="udp-packet.h" />
     <ClInclude Include="udp-server.h" />
-    <ClInclude Include="mysql.h" />
     <ClInclude Include="chat-handler.h" />
   </ItemGroup>
   <ItemGroup>
