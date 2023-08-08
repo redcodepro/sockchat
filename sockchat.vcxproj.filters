@@ -1,11 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="udp-server.cpp" />
     <ClCompile Include="_commands.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="udp-packet.cpp" />
-    <ClCompile Include="udp-user.cpp" />
     <ClCompile Include="_functions.cpp" />
     <ClCompile Include="cmd-handler.cpp">
       <Filter>handlers</Filter>
@@ -13,64 +10,83 @@
     <ClCompile Include="chat-handler.cpp">
       <Filter>handlers</Filter>
     </ClCompile>
-    <ClCompile Include="md5.cpp">
-      <Filter>external</Filter>
-    </ClCompile>
-    <ClCompile Include="udp-cryptor.cpp" />
-    <ClCompile Include="sqlite.cpp">
-      <Filter>sqlite3</Filter>
-    </ClCompile>
     <ClCompile Include="sc_funcs.cpp" />
+    <ClCompile Include="md5.cpp">
+      <Filter>sdk\md5</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlite.cpp">
+      <Filter>handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="udp-cryptor.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="udp-packet.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="udp-server.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="udp-user.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
-    <ClInclude Include="udp-user.h" />
-    <ClInclude Include="udp-packet.h" />
-    <ClInclude Include="udp-server.h" />
     <ClInclude Include="chat-handler.h">
       <Filter>handlers</Filter>
     </ClInclude>
     <ClInclude Include="cmd-handler.h">
       <Filter>handlers</Filter>
     </ClInclude>
-    <ClInclude Include="md5.h">
-      <Filter>external</Filter>
-    </ClInclude>
-    <ClInclude Include="udp-cryptor.h" />
     <ClInclude Include="enet\enet.h">
-      <Filter>enet</Filter>
-    </ClInclude>
-    <ClInclude Include="sqlite.h">
-      <Filter>sqlite3</Filter>
-    </ClInclude>
-    <ClInclude Include="sqlite3\sqlite3.h">
-      <Filter>sqlite3\lib</Filter>
+      <Filter>sdk\enet</Filter>
     </ClInclude>
     <ClInclude Include="sc_types.h" />
+    <ClInclude Include="md5.h">
+      <Filter>sdk\md5</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite3\sqlite3.h">
+      <Filter>sdk\sqlite</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite.h">
+      <Filter>handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="udp-cryptor.h">
+      <Filter>server</Filter>
+    </ClInclude>
+    <ClInclude Include="udp-packet.h">
+      <Filter>server</Filter>
+    </ClInclude>
+    <ClInclude Include="udp-server.h">
+      <Filter>server</Filter>
+    </ClInclude>
+    <ClInclude Include="udp-user.h">
+      <Filter>server</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="handlers">
       <UniqueIdentifier>{1860317b-2732-40d3-9427-f2f4f9c698cc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="external">
+    <Filter Include="sdk">
       <UniqueIdentifier>{913dcf28-d34a-4017-9682-eaba80889691}</UniqueIdentifier>
     </Filter>
-    <Filter Include="sqlite3">
-      <UniqueIdentifier>{18d94c19-eeaf-4521-b49a-eac982991793}</UniqueIdentifier>
+    <Filter Include="sdk\md5">
+      <UniqueIdentifier>{03199790-41d1-4b3d-b0ed-4ce3a5e75838}</UniqueIdentifier>
     </Filter>
-    <Filter Include="enet">
+    <Filter Include="sdk\enet">
       <UniqueIdentifier>{cdf8c9da-efc8-4d0c-b520-204fd2d25b5f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="sqlite3\lib">
-      <UniqueIdentifier>{b228b35c-281f-43f8-9c3d-75fbde02e66a}</UniqueIdentifier>
+    <Filter Include="sdk\sqlite">
+      <UniqueIdentifier>{9bbc8e1e-af24-403a-a532-225e87c01643}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="server">
+      <UniqueIdentifier>{eafbc632-7971-4c41-bfaf-94dba11b1892}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="enet\libenet.a">
-      <Filter>enet</Filter>
-    </Library>
     <Library Include="sqlite3\libsqlite3.a">
-      <Filter>sqlite3\lib</Filter>
+      <Filter>sdk\sqlite</Filter>
     </Library>
   </ItemGroup>
 </Project>

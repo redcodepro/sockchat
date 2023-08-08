@@ -119,14 +119,11 @@ void udpserver_t::MakeBanIP(user_t* user)
 
 void udpserver_t::SendPM(user_t* src, user_t* dst, const char* message)
 {
-	src->AddChat(0xFFF7F488, "[Я >> %s] {ffffff}%s", dst->m_nick.c_str(), message);
-	dst->AddChat(0xFFF7F488, "[%s >> Я] {ffffff}%s", src->m_nick.c_str(), message);
+	src->AddChat(0xFFF7F488, "[Я >> %s[%d]] {ffffff}%s", dst->m_nick.c_str(), dst->m_id, message);
+	dst->AddChat(0xFFF7F488, "[%s[%d] >> Я] {ffffff}%s", src->m_nick.c_str(), dst->m_id, message);
 	src->m_xid = dst->m_id;
 	dst->m_xid = src->m_id;
 	dst->send_notify();
-
-	// pro rp seks v pm nikto ne uznaet!!!
-	// _printf("[private] [%s >> %s] %s", src->m_nick.c_str(), dst->m_nick.c_str(), message);
 }
 
 void udpserver_t::NotifySet(const std::string& url)
