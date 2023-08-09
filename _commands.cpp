@@ -196,7 +196,7 @@ void cmd_kick(user_t* user, int id, const char* reason)
 	if (usr == nullptr)
 		return;
 
-	chat.pushf(1, user->m_id, 0xFFFF6347, "[admin] %s{ff6347}: /kick %s {ffffff}%s", user->nick_c(), usr->nick_c(), reason);
+	chat.pushf(1, user->m_id, 0xFFFF6347, "[A] %s{ff6347}: /kick %s %s", user->nick_c(), usr->nick(), reason);
 	server.KickUser(usr);
 }
 
@@ -206,8 +206,9 @@ void cmd_skick(user_t* user, int id)
 	if (usr == nullptr)
 		return;
 
-	user->AddChat(0xFFDB0000, ">> %s кикнут.", usr->nick());
 	server.KickUser(usr);
+
+	chat.pushf(3, user->m_id, 0xFFADADAD, "[A] %s{adadad}: /skick %s", user->nick_c(), usr->nick());
 }
 
 void cmd_ban(user_t* user, int id, const char* reason)
@@ -216,7 +217,7 @@ void cmd_ban(user_t* user, int id, const char* reason)
 	if (usr == nullptr)
 		return;
 
-	chat.pushf(1, user->m_id, 0xFFFF6347, "[admin] %s{ff6347}: /ban %s {ffffff}%s", user->nick_c(), usr->nick_c(), reason);
+	chat.pushf(1, user->m_id, 0xFFFF6347, "[A] %s{ff6347}: /ban %s %s", user->nick_c(), usr->nick(), reason);
 	server.MakeBan(usr);
 }
 
@@ -226,7 +227,7 @@ void cmd_banip(user_t* user, int id, const char* reason)
 	if (usr == nullptr)
 		return;
 
-	chat.pushf(1, user->m_id, 0xFFFF6347, "[admin] %s{ff6347}: /banip %s {ffffff}%s", user->nick_c(), usr->nick_c(), reason);
+	chat.pushf(1, user->m_id, 0xFFFF6347, "[A] %s{ff6347}: /banip %s %s", user->nick_c(), usr->nick(), reason);
 	server.MakeBanIP(usr);
 }
 
@@ -238,7 +239,8 @@ void cmd_destroy(user_t* user, int id)
 
 	server.MakeBan(usr);
 	cmd_clearuser(user, id);
-	user->AddChat(0xFFDB0000, ">> %s уничтожен.", usr->nick());
+
+	chat.pushf(3, user->m_id, 0xFFADADAD, "[A] %s{adadad}: /destroy %s", user->nick_c(), usr->nick());
 }
 
 void cmd_setcolor(user_t* user, int id, color_t color)
@@ -324,7 +326,7 @@ void cmd_hideme(user_t* user)
 
 void cmd_chat_vip(user_t* user, const char* text)
 {
-	chat.pushf(2, user->m_id, 0xFF8B61FF, "[VIP] %s{ffffff}: %s", user->nick_c(), text);
+	chat.pushf(2, user->m_id, 0xFFFCD71C, "[VIP] %s{ffffff}: %s", user->nick_c(), text);
 }
 
 void cmd_chat_adm(user_t* user, const char* text)
@@ -388,6 +390,24 @@ void cmd_tts_all(user_t* user, const char* text)
 	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Проигрываю: {ffc800}YTTS: \"%s\"", text);
 }
 
+void cmd_nick(user_t* user, const char* nick)
+{
+	if (!nick_is_valid(nick, true))
+	{
+		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Ник не подходит!");
+		return;
+	}
+
+	if (db.find_user(nick) != -1)
+	{
+		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Ник занят!");
+		return;
+	}
+
+	user->set_nick(nick);
+	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Установлен новый ник: %s", nick);
+}
+
 void init_commands()
 {
 	cmds.add({ "reg", "register" },		new cmd_t{ 0, (void*)cmd_register,	"ss",	"<nick> <pass>"	});
@@ -423,6 +443,7 @@ void init_commands()
 	cmds.add({ "notify_set" },			new cmd_t{ 5, (void*)cmd_setnotify,	"*",	"<name>"		});
 	cmds.add({ "play" },				new cmd_t{ 5, (void*)cmd_playnotify,"*",	"<name>"		});
 	cmds.add({ "tts", "say" },			new cmd_t{ 5, (void*)cmd_tts_all,	"*",	"<text>"		});
+	cmds.add({ "nick" },				new cmd_t{ 1, (void*)cmd_nick,		"*",	"<nick>"		});
 
 	_printf("[info] init_commands(): %d commands loaded.", cmds.get_count());
 }
