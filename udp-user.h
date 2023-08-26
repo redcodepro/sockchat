@@ -17,11 +17,13 @@ public:
 	int			m_status;
 	color_t		m_color;
 
-	int			m_xid;
+	int			m_pm_id;
+	int			m_room_id;
 
 	user_t(peer_t peer)
 		: m_peer(peer), m_watching(0), m_rainbow(0), m_hideme(0),
-		m_notify(1), m_id(-1), m_status(0), m_color(-1), m_xid(-1)
+		m_notify(1), m_displayname("{ffffff}[-1]"), m_id(-1),
+		m_status(0), m_color(-1), m_pm_id(-1), m_room_id(-1)
 	{}
 
 	void udn(); // update display name

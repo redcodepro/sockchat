@@ -129,12 +129,12 @@ void udpserver_t::MakeBanIP(user_t* user)
 	MakeBan(user);
 }
 
-void udpserver_t::SendPM(user_t* src, user_t* dst, const char* message)
+void udpserver_t::SendPM(user_t* src, user_t* dst, const std::string& text)
 {
-	src->AddChat(0xFFF7F488, "[Я >> %s[%d]] {ffffff}%s", dst->m_nick.c_str(), dst->m_id, message);
-	dst->AddChat(0xFFF7F488, "[%s[%d] >> Я] {ffffff}%s", src->m_nick.c_str(), dst->m_id, message);
-	src->m_xid = dst->m_id;
-	dst->m_xid = src->m_id;
+	src->AddChat(0xFFF7F488, "[Я >> %s[%d]] {ffffff}%s", dst->m_nick.c_str(), dst->m_id, text.c_str());
+	dst->AddChat(0xFFF7F488, "[%s[%d] >> Я] {ffffff}%s", src->m_nick.c_str(), dst->m_id, text.c_str());
+	src->m_pm_id = dst->m_id;
+	dst->m_pm_id = src->m_id;
 	dst->send_notify();
 }
 

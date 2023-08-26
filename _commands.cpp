@@ -154,25 +154,25 @@ void cmd_msg(user_t* user, int id, const char* text)
 		return;
 	}
 
-	server.SendPM(user, usr, text);
+	server.SendPM(user, usr, format_out(text));
 }
 
 void cmd_msg_re(user_t* user, const char* text)
 {
-	if (user->m_xid == -1)
+	if (user->m_pm_id == -1)
 	{
 		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Некому отвечать");
 		return;
 	}
 
-	user_t* usr = server.find_user(user->m_xid);
+	user_t* usr = server.find_user(user->m_pm_id);
 	if (usr == nullptr)
 	{
 		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Пользователь оффлайн!");
 		return;
 	}
 
-	server.SendPM(user, usr, text);
+	server.SendPM(user, usr, format_out(text));
 }
 
 user_t* find_target(user_t* user, int id)
@@ -337,17 +337,17 @@ void cmd_hideme(user_t* user)
 
 void cmd_chat_vip(user_t* user, const char* text)
 {
-	chat.pushf(2, user->m_id, 0xFFFCD71C, "[VIP] %s{ffffff}: %s", user->nick_c(), text);
+	chat.pushf(2, user->m_id, 0xFFFCD71C, "[VIP] %s{ffffff}: %s", user->nick_c(), format_out(text, false).c_str());
 }
 
 void cmd_chat_adm(user_t* user, const char* text)
 {
-	chat.pushf(3, user->m_id, 0xFFA6E300, "[A] %s{a6e300}: %s", user->nick_c(), text);
+	chat.pushf(3, user->m_id, 0xFFA6E300, "[A] %s{a6e300}: %s", user->nick_c(), format_out(text, false).c_str());
 }
 
 void cmd_chat_all(user_t* user, const char* text)
 {
-	chat.pushf(0, user->m_id, 0xFFFFE500, "[G] %s{ffe500}: %s", user->nick_c(), text);
+	chat.pushf(0, user->m_id, 0xFFFFE500, "[G] %s{ffe500}: %s", user->nick_c(), format_out(text, false).c_str());
 }
 
 void cmd_notify(user_t* user)

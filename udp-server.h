@@ -28,8 +28,7 @@ public:
 	void KickUser(user_t* user, bool send_closed = true);
 	void MakeBan(user_t* user);
 	void MakeBanIP(user_t* user);
-	void SendPM(user_t* src, user_t* dst, const char* message);
-	void NotifyAll(int level = 0);
+	void SendPM(user_t* src, user_t* dst, const std::string& text);
 	void NotifySet(const std::string& url);
 	void NotifyPlay(const std::string& url);
 
