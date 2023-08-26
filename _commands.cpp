@@ -123,6 +123,8 @@ void cmd_erase(user_t* user, const char* text)
 	opacket_t packet(id_chat_erase);
 	packet.write_string(text);
 	server.Broadcast(&packet);
+
+	_printf("[admin] %s: /erase \"%s\"", user->nick(), text);
 }
 
 void cmd_clearuser(user_t* user, int id)
@@ -134,6 +136,7 @@ void cmd_clearuser(user_t* user, int id)
 	server.Broadcast(&packet);
 
 	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Удалено %d сообщений.", c);
+	_printf("[admin] %s: /clear_user %d -> count: %d", user->nick(), id, c);
 }
 
 void cmd_msg(user_t* user, int id, const char* text)
@@ -251,6 +254,8 @@ void cmd_setcolor(user_t* user, int id, color_t color)
 
 	usr->set_color(color);
 	user->AddChat(0xFFDB0000, ">> Установлен цвет для %s", usr->nick_c());
+
+	_printf("[admin] %s: /setcolor %d %x", user->nick(), id, color);
 }
 
 void cmd_setnick(user_t* user, int id, const char* nick)
@@ -272,6 +277,8 @@ void cmd_setnick(user_t* user, int id, const char* nick)
 
 	usr->set_nick(nick);
 	user->AddChat(0xFFDB0000, ">> Установлен ник для %s", usr->nick_c());
+
+	_printf("[admin] %s: /setnick %d \"%s\"", user->nick(), id, nick);
 }
 
 void cmd_setprefix(user_t* user, int id, const char* prefix)
@@ -290,6 +297,8 @@ void cmd_setprefix(user_t* user, int id, const char* prefix)
 		usr->set_prefix(prefix);
 		user->AddChat(0xFFDB0000, ">> Установлен префикс для %s", usr->nick_c());
 	}
+
+	_printf("[admin] %s: /setprefix %d \"%s\"", user->nick(), id, prefix);
 }
 
 void cmd_setstatus(user_t* user, int id, int status)
@@ -298,7 +307,7 @@ void cmd_setstatus(user_t* user, int id, int status)
 	if (usr == nullptr)
 		return;
 
-	if (status < 1 || status > 4)
+	if (status < 1 || status >= user->m_status)
 	{
 		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Невозможно установить статус!");
 		return;
@@ -306,6 +315,8 @@ void cmd_setstatus(user_t* user, int id, int status)
 
 	usr->set_status(status);
 	user->AddChat(0xFFDB0000, ">> Установлен статус {ffffff}%d {db0000}для %s", status, usr->nick_c());
+
+	_printf("[admin] %s: /setstatus %d %d", user->nick(), id, status);
 }
 
 void cmd_rainbow(user_t* user, int id)
@@ -404,6 +415,8 @@ void cmd_nick(user_t* user, const char* nick)
 		return;
 	}
 
+	_printf("[nick] %s -> %s", user->nick(), nick);
+
 	user->set_nick(nick);
 	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Установлен новый ник: %s", nick);
 }
@@ -436,10 +449,10 @@ void init_commands()
 	cmds.add({ "setcolor" },			new cmd_t{ 4, (void*)cmd_setcolor,	"dx",	"<id> <color>"	});
 	cmds.add({ "setprefix" },			new cmd_t{ 4, (void*)cmd_setprefix,	"d*",	"<id> <prefix>"	});
 	cmds.add({ "setnick" },				new cmd_t{ 5, (void*)cmd_setnick,	"ds",	"<id> <nick>"	});
-	cmds.add({ "setstatus" },			new cmd_t{ 5, (void*)cmd_setstatus,	"dd",	"<id> <status>"	});
+	cmds.add({ "setstatus" },			new cmd_t{ 3, (void*)cmd_setstatus,	"dd",	"<id> <status>"	});
 	cmds.add({ "rainbow", "makegay" },	new cmd_t{ 5, (void*)cmd_rainbow,	"d",	"<id>"			});
 	cmds.add({ "hideme" },				new cmd_t{ 4, (void*)cmd_hideme,	"",		""				});
-	cmds.add({ "notify" },				new cmd_t{ 1, (void*)cmd_notify,	"",		""				});
+//	cmds.add({ "notify" },				new cmd_t{ 1, (void*)cmd_notify,	"",		""				});
 	cmds.add({ "notify_set" },			new cmd_t{ 5, (void*)cmd_setnotify,	"*",	"<name>"		});
 	cmds.add({ "play" },				new cmd_t{ 5, (void*)cmd_playnotify,"*",	"<name>"		});
 	cmds.add({ "tts", "say" },			new cmd_t{ 5, (void*)cmd_tts_all,	"*",	"<text>"		});
