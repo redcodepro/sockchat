@@ -95,6 +95,18 @@ void cmd_do(user_t* user, const char* text)
 	chat.pushf(1, user->m_id, 0xFF4682B4, "%s - | %s", format_out(text).c_str(), user->nick_c());
 }
 
+void cmd_todo(user_t* user, const char* text)
+{
+	char part[2][256];
+	if (sscanf(text, "%[^*]*%[^\n]", part[0], part[1]) != 2)
+	{
+		user->AddChat(0xFFDB0000, "Используйте: {ffffff}/todo Фраза*Действие");
+		return;
+	}
+
+	chat.pushf(1, user->m_id, 0xFFFFFFFF, "'%s', - сказал(а) %s{ffffff}, {ff99ff}%s", part[0], user->nick(), part[1]);
+}
+
 void cmd_exit(user_t* user)
 {
 	user->logout();
@@ -433,6 +445,7 @@ void init_commands()
 	cmds.add({ "re", "r" },				new cmd_t{ 1, (void*)cmd_msg_re,	"*",	"<text>"		});
 	cmds.add({ "me" },					new cmd_t{ 1, (void*)cmd_me,		"*",	"<text>"		});
 	cmds.add({ "do" },					new cmd_t{ 1, (void*)cmd_do,		"*",	"<text>"		});
+	cmds.add({ "todo" },				new cmd_t{ 1, (void*)cmd_todo,		"*",	"<text>*<text>"	});
 	cmds.add({ "exit", "quit" },		new cmd_t{ 2, (void*)cmd_exit,		"",		""				});
 	cmds.add({ "update" },				new cmd_t{ 2, (void*)cmd_update,	"",		""				});
 	cmds.add({ "vr", "vip" },			new cmd_t{ 2, (void*)cmd_chat_vip,	"*",	"<text>"		});
