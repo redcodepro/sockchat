@@ -2,10 +2,9 @@
 
 void user_t::udn()
 {
-	char buf[512];
-	sprintf(buf, "{%06x}%s%s[%d]", (m_color & 0xFFFFFF), m_prefix.c_str(), m_nick.c_str(), m_id);
-	m_displayname = buf + 8;
-	m_displayname_c = buf;
+	char buf[2048];
+	snprintf(buf, 2048, "{%06x}%s%s[%d]", (m_color & 0xFFFFFF), m_prefix.c_str(), m_nick.c_str(), m_id);
+	m_displayname = buf;
 	server.on_udn();
 }
 
@@ -46,6 +45,7 @@ void user_t::logout()
 	m_color = -1;
 	m_nick = "";
 	m_id = -1;
+	user_t::udn();
 
 	user_t::send_auth("");
 }

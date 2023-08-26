@@ -9,7 +9,6 @@ public:
 	bool		m_hideme;
 	bool		m_notify;
 	std::string m_displayname;
-	std::string m_displayname_c;
 
 	int			m_id;
 	std::string	m_prefix;
@@ -56,6 +55,6 @@ public:
 	void set_prefix(const std::string& prefix);
 	void set_status(int status);
 
-	const char* nick() { return m_displayname.c_str(); }
-	const char* nick_c() { return m_displayname_c.c_str(); }
+	const char* nick() { return m_displayname.c_str() + 8; }
+	const char* nick_c() { return m_displayname.c_str(); }
 };
