@@ -2,13 +2,10 @@
 #define MAIN_H
 
 #include <string>
-#include <deque>
 #include <mutex>
 #include <regex>
-#include <thread>
-#include <unordered_map>
-#include <unordered_set>
 #include <random>
+#include <unordered_map>
 
 #include <sys/time.h>
 #include <sys/stat.h>
