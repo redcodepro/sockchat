@@ -17,7 +17,7 @@ void udpserver_t::exec()
 	_srand();
 	m_crypt.init(rand());
 
-	_printf("[info] Server running at 0.0.0.0:%hu", m_addr.port);
+	_printf("[info] Server running at %s", addr(&m_addr));
 
 	while (true)
 	{
@@ -30,7 +30,7 @@ void udpserver_t::exec()
 			if (++count > 100)
 				break;
 
-			_printf("[error] Service failed %d times. uc: %d", count, m_users.size());
+			_printf("[error] Service failed %d times.", count);
 		}
 
 		handle_event(&ev);
@@ -61,10 +61,10 @@ void udpserver_t::handle_event(ENetEvent* ev)
 				ev->peer->data = user;
 				m_users.insert(std::pair(ev->peer, user));
 
-				opacket_t packet(id_chat_init);
-				packet.write<unsigned int>(m_crypt.seed());
+				packet_t packet(id_chat_init);
+				packet.write<enet_uint32>(m_crypt.seed());
 				packet.write_string(m_name);
-				enet_peer_send(ev->peer, 0, packet.to_enet());
+				enet_peer_send(ev->peer, 0, packet.get());
 			}
 		}
 		break;
@@ -85,21 +85,21 @@ void udpserver_t::handle_event(ENetEvent* ev)
 		{
 			if (user_t* user = (user_t*)ev->peer->data)
 			{
-				ipacket_t packet(ev->packet);
+				packet_t packet(ev->packet);
 				user->OnPacket(&packet);
 			}
 
-			enet_packet_destroy(ev->packet);
+			// enet_packet_destroy(ev->packet);
 		}
 		break;
 	}
 }
 
-void udpserver_t::Broadcast(opacket_t* packet, int level)
+void udpserver_t::Broadcast(packet_t* packet, int level)
 {
 	m_crypt.encrypt(packet);
 
-	ENetPacket* ep = packet->to_enet();
+	ENetPacket* ep = packet->get();
 	for (auto& it : m_users)
 	{
 		peer_t peer = it.first;
@@ -140,14 +140,14 @@ void udpserver_t::SendPM(user_t* src, user_t* dst, const std::string& text)
 
 void udpserver_t::NotifySet(const std::string& url)
 {
-	opacket_t packet(id_notify_set_url);
+	packet_t packet(id_notify_set_url);
 	packet.write_string(url);
 	Broadcast(&packet);
 }
 
 void udpserver_t::NotifyPlay(const std::string& url)
 {
-	opacket_t packet(id_notify_play_url);
+	packet_t packet(id_notify_play_url);
 	packet.write_string(url);
 	Broadcast(&packet);
 }

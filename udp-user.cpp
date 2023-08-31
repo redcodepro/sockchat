@@ -50,63 +50,63 @@ void user_t::logout()
 	user_t::send_auth("");
 }
 
-void user_t::send(opacket_t* packet)
+void user_t::send(packet_t* packet)
 {
 	server.m_crypt.encrypt(packet);
-	enet_peer_send(m_peer, 0, packet->to_enet());
+	enet_peer_send(m_peer, 0, packet->get());
 }
 
 void user_t::send_auth(const std::string& auth)
 {
-	opacket_t packet(id_chat_auth);
+	packet_t packet(id_chat_auth);
 	packet.write_string(auth);
 	user_t::send(&packet);
 }
 
 void user_t::send_hudtext(const std::string& text)
 {
-	opacket_t packet(id_hudtext_init);
+	packet_t packet(id_hudtext_init);
 	packet.write_string(text);
 	user_t::send(&packet);
 }
 
 void user_t::send_unreaded(int count)
 {
-	opacket_t packet(id_chat_unreaded);
+	packet_t packet(id_chat_unreaded);
 	packet.write<int>(count);
 	user_t::send(&packet);
 }
 
 void user_t::send_notify()
 {
-	opacket_t packet(id_notify_play);
+	packet_t packet(id_notify_play);
 	user_t::send(&packet);
 }
 
 void user_t::send_notify_set(const std::string& url)
 {
-	opacket_t packet(id_notify_set_url);
+	packet_t packet(id_notify_set_url);
 	packet.write_string(url);
 	user_t::send(&packet);
 }
 
 void user_t::send_notify_play(const std::string& url)
 {
-	opacket_t packet(id_notify_play_url);
+	packet_t packet(id_notify_play_url);
 	packet.write_string(url);
 	user_t::send(&packet);
 }
 
 void user_t::send_erase(const std::string& text)
 {
-	opacket_t packet(id_chat_erase);
+	packet_t packet(id_chat_erase);
 	packet.write_string(text);
 	user_t::send(&packet);
 }
 
 void user_t::send_erase(id_t id)
 {
-	opacket_t packet(id_chat_erase);
+	packet_t packet(id_chat_erase);
 	packet.write<id_t>(id);
 	user_t::send(&packet);
 }
@@ -123,7 +123,7 @@ void user_t::AddChat(color_t color, const char* fmt, ...)
 	if (count < 0) return;
 	if (count > 512) count = 512;
 	
-	opacket_t packet(id_chat_message);
+	packet_t packet(id_chat_message);
 	packet.write<id_t>(0);
 	packet.write<time_t>(time(0));
 	packet.write<color_t>(color);
@@ -179,7 +179,7 @@ void user_t::OnAuth(const std::string& key)
 	send_unreaded(1);
 }
 
-void user_t::OnPacket(ipacket_t* packet)
+void user_t::OnPacket(packet_t* packet)
 {
 	server.m_crypt.decrypt(packet);
 

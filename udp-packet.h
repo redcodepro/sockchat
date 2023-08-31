@@ -26,31 +26,20 @@ enum packet_id : int
 
 static_assert(sizeof(packet_id) == sizeof(int));
 
-class ipacket_t
+class packet_t
 {
 	friend class udpcrypt_t;
 private:
-	uint8_t*	data;
-	size_t		len;
+	ENetPacket*	packet;
+	size_t		size;
 	size_t		pos;
+
+	void realloc(size_t size);
+	static void free_callback(void* data);
 public:
-	ipacket_t(uint8_t* _data, size_t _len) : data(_data), len(_len), pos(0) {}
-	ipacket_t(ENetPacket* packet) : ipacket_t(packet->data, packet->dataLength) {}
-
-	bool read(void* dst, size_t n);
-	bool read_string(std::string& val);
-
-	template <typename T>
-	bool read(T& val) { return read(&val, sizeof(T)); }
-};
-
-class opacket_t
-{
-	friend class udpcrypt_t;
-private:
-	std::string data;
-public:
-	opacket_t(packet_id id) { write<packet_id>(id); }
+	packet_t(ENetPacket* _packet); // incoming
+	packet_t(packet_id id, enet_uint32 flags = ENET_PACKET_FLAG_RELIABLE); // outgoing
+	~packet_t();
 
 	void write(const void* src, size_t n);
 	void write_string(const std::string& val);
@@ -58,5 +47,11 @@ public:
 	template <typename T>
 	void write(const T& val) { write(&val, sizeof(T)); }
 
-	ENetPacket* to_enet(enet_uint32 flags = ENET_PACKET_FLAG_RELIABLE);
+	bool read(void* dst, size_t n);
+	bool read_string(std::string& val);
+
+	template <typename T>
+	bool read(T& val) { return read(&val, sizeof(T)); }
+
+	ENetPacket* get() { return packet; }
 };

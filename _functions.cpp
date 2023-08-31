@@ -106,7 +106,7 @@ void udpserver_t::send_online()
 	sprintf(buf, "\uf007 %d / %d | Онлайн:", users, total);
 	online.insert(0, buf);
 
-	opacket_t packet(id_hudtext_init);
+	packet_t packet(id_hudtext_init);
 	packet.write_string(online);
 	Broadcast(&packet, 0);
 }

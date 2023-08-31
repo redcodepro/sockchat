@@ -114,7 +114,7 @@ void cmd_exit(user_t* user)
 
 void cmd_clear(user_t* user)
 {
-	opacket_t packet(id_chat_erase);
+	packet_t packet(id_chat_erase);
 	packet.write_string("");
 	server.Broadcast(&packet);
 
@@ -132,7 +132,7 @@ void cmd_erase(user_t* user, const char* text)
 {
 	chat.clear(text);
 
-	opacket_t packet(id_chat_erase);
+	packet_t packet(id_chat_erase);
 	packet.write_string(text);
 	server.Broadcast(&packet);
 
@@ -143,7 +143,7 @@ void cmd_clearuser(user_t* user, int id)
 {
 	int c = chat.clear_id(id);
 
-	opacket_t packet(id_chat_erase_id);
+	packet_t packet(id_chat_erase_id);
 	packet.write<id_t>(id);
 	server.Broadcast(&packet);
 

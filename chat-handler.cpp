@@ -17,7 +17,7 @@ void chat_handler_t::send_history(user_t* user)
 		if (user->m_status < it.m_status)
 			continue;
 		
-		opacket_t out(id_chat_message);
+		packet_t out(id_chat_message);
 		out.write<id_t>(it.m_id);
 		out.write<time_t>(it.m_time);
 		out.write<color_t>(it.m_color);
@@ -67,7 +67,7 @@ void chat_handler_t::send(const entry_t& entry)
 {
 	_printf("[chat] %s", entry.m_text.c_str());
 
-	opacket_t out(id_chat_message);
+	packet_t out(id_chat_message);
 	out.write<id_t>(entry.m_id);
 	out.write<time_t>(entry.m_time);
 	out.write<color_t>(entry.m_color);

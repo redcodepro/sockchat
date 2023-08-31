@@ -30,7 +30,7 @@ public:
 	void login(userdata_t* ud);
 	void logout();
 
-	void send(opacket_t* packet);
+	void send(packet_t* packet);
 	void send_auth(const std::string& auth);
 	void send_erase(const std::string& text);
 	void send_erase(id_t id);
@@ -46,7 +46,7 @@ public:
 	void OnConnect();
 	void OnDisconnect();
 	void OnAuth(const std::string& key);
-	void OnPacket(ipacket_t* packet);
+	void OnPacket(packet_t* packet);
 	void OnChat(const std::string& text);
 	void OnCommand(const std::string& text);
 
