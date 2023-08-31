@@ -319,7 +319,7 @@ void cmd_setstatus(user_t* user, int id, int status)
 	if (usr == nullptr)
 		return;
 
-	if (status < 1 || status >= user->m_status)
+	if (status < 1 || status >= user->m_status || user->m_id == id)
 	{
 		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Невозможно установить статус!");
 		return;
@@ -364,8 +364,7 @@ void cmd_chat_all(user_t* user, const char* text)
 
 void cmd_notify(user_t* user)
 {
-	user->m_notify ^= 1;
-	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Звук входящих сообщений %s", user->m_notify ? "{00ff00}включен" : "{ff0000}выключен");
+	user->send_notify();
 }
 
 void cmd_setnotify(user_t* user, const char* name)
@@ -465,7 +464,7 @@ void init_commands()
 	cmds.add({ "setstatus" },			new cmd_t{ 3, (void*)cmd_setstatus,	"dd",	"<id> <status>"	});
 	cmds.add({ "rainbow", "makegay" },	new cmd_t{ 5, (void*)cmd_rainbow,	"d",	"<id>"			});
 	cmds.add({ "hideme" },				new cmd_t{ 4, (void*)cmd_hideme,	"",		""				});
-//	cmds.add({ "notify" },				new cmd_t{ 1, (void*)cmd_notify,	"",		""				});
+	cmds.add({ "notify" },				new cmd_t{ 1, (void*)cmd_notify,	"",		""				});
 	cmds.add({ "notify_set" },			new cmd_t{ 5, (void*)cmd_setnotify,	"*",	"<name>"		});
 	cmds.add({ "play" },				new cmd_t{ 5, (void*)cmd_playnotify,"*",	"<name>"		});
 	cmds.add({ "tts", "say" },			new cmd_t{ 5, (void*)cmd_tts_all,	"*",	"<text>"		});
