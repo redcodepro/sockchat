@@ -86,7 +86,7 @@ void user_t::send_unreaded(int count)
 
 void user_t::send_notify()
 {
-	packet_t packet(id_notify_play);
+	packet_t packet(_id_notify_play);
 	user_t::send(&packet);
 }
 
@@ -99,7 +99,7 @@ void user_t::send_notify_set(const std::string& url)
 
 void user_t::send_notify_play(const std::string& url)
 {
-	packet_t packet(id_notify_play_url);
+	packet_t packet(_id_notify_play_url);
 	packet.write_string(url);
 	user_t::send(&packet);
 }
@@ -214,7 +214,7 @@ void user_t::OnPacket(packet_t* packet)
 				OnChat(data);
 		}
 		break;
-	case id_user_watching:
+	case id_user_looks:
 		{
 			bool b;
 			packet->read<bool>(b);
