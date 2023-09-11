@@ -130,12 +130,13 @@ void cmd_update(user_t* user)
 
 void cmd_erase(user_t* user, const char* text)
 {
-	chat.clear(text);
+	int c = chat.clear(text);
 
 	packet_t packet(id_chat_erase);
 	packet.write_string(text);
 	server.Broadcast(&packet);
 
+	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Удалено %d сообщений.", c);
 	_printf("[admin] %s: /erase \"%s\"", user->nick(), text);
 }
 

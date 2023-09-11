@@ -25,7 +25,7 @@ private:
 	entries_t	m_lines;
 public:
 	void		send_history(user_t* user);
-	void		clear(const char* text = nullptr);
+	int			clear(const char* text = nullptr);
 	int			clear_id(id_t id = 0);
 
 	void		push(const entry_t& entry);

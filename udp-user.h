@@ -4,6 +4,7 @@ class user_t
 {
 public:
 	peer_t		m_peer;
+	std::string m_addr;
 	bool		m_watching;
 	bool		m_rainbow;
 	bool		m_hideme;
@@ -19,11 +20,7 @@ public:
 	int			m_pm_id;
 	int			m_room_id;
 
-	user_t(peer_t peer)
-		: m_peer(peer), m_watching(0), m_rainbow(0), m_hideme(0),
-		m_notify(1), m_displayname("{ffffff}[-1]"), m_id(-1),
-		m_status(0), m_color(-1), m_pm_id(-1), m_room_id(-1)
-	{}
+	user_t(peer_t peer);
 
 	void udn(); // update display name
 

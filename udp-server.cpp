@@ -65,6 +65,7 @@ void udpserver_t::handle_event(ENetEvent* ev)
 				packet.write<enet_uint32>(m_crypt.seed());
 				packet.write_string(m_name);
 				enet_peer_send(ev->peer, 0, packet.get());
+				enet_peer_timeout(ev->peer, 0, 5000, 15000);
 			}
 		}
 		break;

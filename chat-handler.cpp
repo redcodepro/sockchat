@@ -30,22 +30,25 @@ void chat_handler_t::send_history(user_t* user)
 	user->send_unreaded(1);
 }
 
-void chat_handler_t::clear(const char* text)
+int chat_handler_t::clear(const char* text)
 {
 	if (text == nullptr || text[0] == '\0')
 	{
 		m_lines.clear();
-		return;
+		return -1;
 	}
 
+	int c = 0;
 	for (std::size_t i = 0; i < m_lines.size(); ++i)
 	{
 		if (strstr(m_lines[i].m_text.c_str(), text))
 		{
 			m_lines.erase(m_lines.begin() + i);
 			i--;
+			c++;
 		}
 	}
+	return c;
 }
 
 int chat_handler_t::clear_id(id_t id)

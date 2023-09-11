@@ -1,5 +1,12 @@
 ﻿#include "main.h" // ÙŦF-8
 
+user_t::user_t(peer_t peer)
+	: m_peer(peer), m_watching(false), m_rainbow(false), m_hideme(false), m_notify(false),
+	m_displayname("{ffffff}[-1]"), m_id(-1), m_status(0), m_color(-1), m_pm_id(-1), m_room_id(-1)
+{
+	m_addr = addr(&peer->address);
+}
+
 void user_t::udn()
 {
 	char buf[2048];
@@ -140,7 +147,7 @@ void user_t::OnConnect()
 	if (m_status < 4)
 		chat.sendf(1, m_id, m_color, "%s {f7f488}подключился", nick());
 
-	_printf("[login] user: %s[%d], ip: %s", m_nick.c_str(), m_id, addr(&m_peer->address));
+	_printf("[login] user: %s[%d], ip: %s", m_nick.c_str(), m_id, m_addr.c_str());
 }
 
 void user_t::OnDisconnect()
@@ -153,12 +160,13 @@ void user_t::OnDisconnect()
 
 	server.on_udn();
 
-	_printf("[logout] user: %s[%d], ip: %s", m_nick.c_str(), m_id, addr(&m_peer->address));
+	_printf("[logout] user: %s[%d], ip: %s", m_nick.c_str(), m_id, m_addr.c_str());
 }
 
 void user_t::OnAuth(const std::string& key)
 {
 	//send_erase("");
+	send_hudtext("");
 
 	if (key_is_valid(key))
 	{

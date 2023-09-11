@@ -10,6 +10,7 @@ packet_t::packet_t(packet_id id, enet_uint32 flags)
 	: packet(enet_packet_create(0, 0, flags | ENET_PACKET_FLAG_NO_ALLOCATE)), size(32), pos(0)
 {
 	packet->data = (enet_uint8*)malloc(size);
+	packet->freeCallback = free_callback;
 	write<packet_id>(id);
 }
 

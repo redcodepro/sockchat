@@ -95,8 +95,8 @@ void udpserver_t::send_online()
 			sprintf(buf, "\n%s (%d) ", user->nick_c(), user->m_status);
 			online += buf;
 
-			if (user->m_status < 4)
-				online += user->m_watching ? "\uf11a" : "\uf111";
+			if (user->m_status < 4 && user->m_watching)
+				online += "\uf11a";
 			
 			users += 1;
 		}
@@ -172,11 +172,8 @@ int string_replace_all(std::string& str, const char* from, const char* to)
 
 const char* addr(ENetAddress* addr)
 {
-	char ip[256];
-	enet_address_get_host_ip(addr, ip, 256);
-	
 	static char buf[256];
-	snprintf(buf, 256, "%s:%hu", ip, addr->port);
+	snprintf(buf, 256, "%s:%hu", addr_ip(addr).c_str(), addr->port);
 	return buf;
 }
 
@@ -184,7 +181,7 @@ std::string addr_ip(ENetAddress* addr)
 {
 	char ip[256];
 	enet_address_get_host_ip(addr, ip, 256);
-	return ip;
+	return std::string((strncmp(ip, "::ffff:", 7) == 0) ? (ip + 7) : (ip));
 }
 
 std::string find_audio_url(const std::string& name)
