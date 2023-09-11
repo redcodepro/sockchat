@@ -196,3 +196,22 @@ std::string find_audio_url(const std::string& name)
 		return "";
 	return cfg.audio_folder + f;
 }
+
+packet_t* create_audio_packet(packet_id id, const std::string& filename)
+{
+	std::size_t p = filename.find_last_of('/');
+	std::string f = (p == std::string::npos ? filename : filename.substr(p + 1)) + ".mp3";
+	std::string n = "/var/www/html/audio/" + f;
+
+	std::ifstream ifs(n, std::ios::binary);
+	std::ostringstream oss(std::ios::binary);
+	oss << ifs.rdbuf();
+	std::string data = oss.str();
+	
+	if (data.empty())
+		return nullptr;
+
+	packet_t* packet = new packet_t(id);
+	packet->write_string(data);
+	return packet;
+}

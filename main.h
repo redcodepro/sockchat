@@ -6,6 +6,7 @@
 #include <regex>
 #include <random>
 #include <unordered_map>
+#include <fstream>
 
 #include <sys/time.h>
 #include <sys/stat.h>
@@ -67,5 +68,6 @@ const char* addr(ENetAddress* addr);
 std::string addr_ip(ENetAddress* addr);
 void init_commands();
 std::string find_audio_url(const std::string& name);
+packet_t* create_audio_packet(packet_id id, const std::string& filename);
 
 #endif // !MAIN_H

@@ -353,7 +353,7 @@ void cmd_chat_vip(user_t* user, const char* text)
 	chat.pushf(2, user->m_id, 0xFFFCD71C, "[VIP] %s{ffffff}: %s", user->nick_c(), format_out(text, false).c_str());
 }
 
-void cmd_chat_adm(user_t* user, const char* text)
+void cmd_chat_admin(user_t* user, const char* text)
 {
 	chat.pushf(3, user->m_id, 0xFFA6E300, "[A] %s{a6e300}: %s", user->nick_c(), format_out(text, false).c_str());
 }
@@ -368,26 +368,33 @@ void cmd_notify(user_t* user)
 	user->send_notify();
 }
 
-void cmd_setnotify(user_t* user, const char* name)
+void cmd_notify_set(user_t* user, const char* name)
 {
-	std::string url = find_audio_url(name);
-	if (url.empty())
+	packet_t* packet = create_audio_packet(id_notify_set, name);
+	if (packet == nullptr)
 	{
-		if (!strcmp(name, "-"))
-		{
-			server.NotifySet("");
-			user->AddChat(0xFF00FF00, "[Информация] {ffffff}Установлен стандартный звук уведомлений.");
-			return;
-		}
 		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Файл не существует!");
 		return;
 	}
 
-	server.NotifySet(url);
-	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Установлен звук уведомлений: {0077e5}\"%s\"", url.c_str());
+	server.Broadcast(packet);
+	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Установлен звук уведомлений: {ffc800}\uf1c7 %s.mp3", name);
 }
 
-void cmd_playnotify(user_t* user, const char* name)
+void cmd_audio_play(user_t* user, const char* name)
+{
+	packet_t* packet = create_audio_packet(id_audio_play, name);
+	if (packet == nullptr)
+	{
+		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Файл не существует!");
+		return;
+	}
+
+	server.Broadcast(packet);
+	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Проигрываю: {ffc800}\uf1c7 %s.mp3", name);
+}
+
+void cmd_audio_play_url(user_t* user, const char* name)
 {
 	std::string url = find_audio_url(name);
 	if (url.empty())
@@ -398,6 +405,12 @@ void cmd_playnotify(user_t* user, const char* name)
 
 	server.NotifyPlay(url);
 	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Проигрываю: {0077e5}\"%s\"", url.c_str());
+}
+
+void cmd_audio_stop(user_t* user)
+{
+	packet_t packet(id_audio_stop);
+	server.Broadcast(&packet, 0);
 }
 
 void cmd_tts_all(user_t* user, const char* text)
@@ -435,41 +448,43 @@ void cmd_nick(user_t* user, const char* nick)
 
 void init_commands()
 {
-	cmds.add({ "reg", "register" },		new cmd_t{ 0, (void*)cmd_register,	"ss",	"<nick> <pass>"	});
-	cmds.add({ "auth", "login" },		new cmd_t{ 0, (void*)cmd_auth,		"ss",	"<nick> <pass>"	});
-	cmds.add({ "setpass", "passwd" },	new cmd_t{ 1, (void*)cmd_setpass,	"s",	"<pass>"		});
-	cmds.add({ "ping" },				new cmd_t{ 1, (void*)cmd_ping,		"",		""				});
-	cmds.add({ "time" },				new cmd_t{ 1, (void*)cmd_time,		"",		""				});
-	cmds.add({ "help" },				new cmd_t{ 1, (void*)cmd_help,		"",		""				});
-	cmds.add({ "msg", "pm", "sms" },	new cmd_t{ 1, (void*)cmd_msg,		"d*",	"<id> <text>"	});
-	cmds.add({ "re", "r" },				new cmd_t{ 1, (void*)cmd_msg_re,	"*",	"<text>"		});
-	cmds.add({ "me" },					new cmd_t{ 1, (void*)cmd_me,		"*",	"<text>"		});
-	cmds.add({ "do" },					new cmd_t{ 1, (void*)cmd_do,		"*",	"<text>"		});
-	cmds.add({ "todo" },				new cmd_t{ 1, (void*)cmd_todo,		"*",	"<text>*<text>"	});
-	cmds.add({ "exit", "quit" },		new cmd_t{ 2, (void*)cmd_exit,		"",		""				});
-	cmds.add({ "update" },				new cmd_t{ 2, (void*)cmd_update,	"",		""				});
-	cmds.add({ "vr", "vip" },			new cmd_t{ 2, (void*)cmd_chat_vip,	"*",	"<text>"		});
-	cmds.add({ "a" },					new cmd_t{ 3, (void*)cmd_chat_adm,	"*",	"<text>"		});
-	cmds.add({ "g", "ao" },				new cmd_t{ 3, (void*)cmd_chat_all,	"*",	"<text>"		});
-	cmds.add({ "erase" },				new cmd_t{ 3, (void*)cmd_erase,		"*",	"<text>"		});
-	cmds.add({ "kick" },				new cmd_t{ 3, (void*)cmd_kick,		"d*",	"<id> <reason>" });
-	cmds.add({ "skick" },				new cmd_t{ 4, (void*)cmd_skick,		"d",	"<id>"			});
-	cmds.add({ "ban" },					new cmd_t{ 3, (void*)cmd_ban,		"d*",	"<id> <reason>" });
-	cmds.add({ "banip" },				new cmd_t{ 4, (void*)cmd_banip,		"d*",	"<id> <reason>"	});
-	cmds.add({ "cc", "clear_chat" },	new cmd_t{ 4, (void*)cmd_clear,		"",		""				});
-	cmds.add({ "cu", "clear_user" },	new cmd_t{ 3, (void*)cmd_clearuser,	"d",	"<id>"			});
-	cmds.add({ "destroy" },				new cmd_t{ 4, (void*)cmd_destroy,	"d",	"<id>"			});
-	cmds.add({ "setcolor" },			new cmd_t{ 4, (void*)cmd_setcolor,	"dx",	"<id> <color>"	});
-	cmds.add({ "setprefix" },			new cmd_t{ 4, (void*)cmd_setprefix,	"d*",	"<id> <prefix>"	});
-	cmds.add({ "setnick" },				new cmd_t{ 5, (void*)cmd_setnick,	"ds",	"<id> <nick>"	});
-	cmds.add({ "setstatus" },			new cmd_t{ 3, (void*)cmd_setstatus,	"dd",	"<id> <status>"	});
-	cmds.add({ "rainbow", "makegay" },	new cmd_t{ 5, (void*)cmd_rainbow,	"d",	"<id>"			});
-	cmds.add({ "hideme" },				new cmd_t{ 4, (void*)cmd_hideme,	"",		""				});
-	cmds.add({ "notify" },				new cmd_t{ 1, (void*)cmd_notify,	"",		""				});
-	cmds.add({ "notify_set" },			new cmd_t{ 5, (void*)cmd_setnotify,	"*",	"<name>"		});
-	cmds.add({ "play" },				new cmd_t{ 5, (void*)cmd_playnotify,"*",	"<name>"		});
-	cmds.add({ "tts", "say" },			new cmd_t{ 5, (void*)cmd_tts_all,	"*",	"<text>"		});
-	cmds.add({ "nick" },				new cmd_t{ 1, (void*)cmd_nick,		"*",	"<nick>"		});
+	cmds.add({ "reg", "register" },		new cmd_t{ 0, (void*)cmd_register,			"ss",	"<nick> <pass>"	});
+	cmds.add({ "auth", "login" },		new cmd_t{ 0, (void*)cmd_auth,				"ss",	"<nick> <pass>"	});
+	cmds.add({ "setpass", "passwd" },	new cmd_t{ 1, (void*)cmd_setpass,			"s",	"<pass>"		});
+	cmds.add({ "ping" },				new cmd_t{ 1, (void*)cmd_ping,				"",		""				});
+	cmds.add({ "time" },				new cmd_t{ 1, (void*)cmd_time,				"",		""				});
+	cmds.add({ "help" },				new cmd_t{ 1, (void*)cmd_help,				"",		""				});
+	cmds.add({ "msg", "pm", "sms" },	new cmd_t{ 1, (void*)cmd_msg,				"d*",	"<id> <text>"	});
+	cmds.add({ "re", "r" },				new cmd_t{ 1, (void*)cmd_msg_re,			"*",	"<text>"		});
+	cmds.add({ "me" },					new cmd_t{ 1, (void*)cmd_me,				"*",	"<text>"		});
+	cmds.add({ "do" },					new cmd_t{ 1, (void*)cmd_do,				"*",	"<text>"		});
+	cmds.add({ "todo" },				new cmd_t{ 1, (void*)cmd_todo,				"*",	"<text>*<text>"	});
+	cmds.add({ "exit", "quit" },		new cmd_t{ 2, (void*)cmd_exit,				"",		""				});
+	cmds.add({ "update" },				new cmd_t{ 2, (void*)cmd_update,			"",		""				});
+	cmds.add({ "vr", "vip" },			new cmd_t{ 2, (void*)cmd_chat_vip,			"*",	"<text>"		});
+	cmds.add({ "a" },					new cmd_t{ 3, (void*)cmd_chat_admin,		"*",	"<text>"		});
+	cmds.add({ "g", "ao" },				new cmd_t{ 3, (void*)cmd_chat_all,			"*",	"<text>"		});
+	cmds.add({ "erase" },				new cmd_t{ 3, (void*)cmd_erase,				"*",	"<text>"		});
+	cmds.add({ "kick" },				new cmd_t{ 3, (void*)cmd_kick,				"d*",	"<id> <reason>" });
+	cmds.add({ "skick" },				new cmd_t{ 4, (void*)cmd_skick,				"d",	"<id>"			});
+	cmds.add({ "ban" },					new cmd_t{ 3, (void*)cmd_ban,				"d*",	"<id> <reason>" });
+	cmds.add({ "banip" },				new cmd_t{ 4, (void*)cmd_banip,				"d*",	"<id> <reason>"	});
+	cmds.add({ "cc", "clear_chat" },	new cmd_t{ 4, (void*)cmd_clear,				"",		""				});
+	cmds.add({ "cu", "clear_user" },	new cmd_t{ 3, (void*)cmd_clearuser,			"d",	"<id>"			});
+	cmds.add({ "destroy" },				new cmd_t{ 4, (void*)cmd_destroy,			"d",	"<id>"			});
+	cmds.add({ "setcolor" },			new cmd_t{ 4, (void*)cmd_setcolor,			"dx",	"<id> <color>"	});
+	cmds.add({ "setprefix" },			new cmd_t{ 4, (void*)cmd_setprefix,			"d*",	"<id> <prefix>"	});
+	cmds.add({ "setnick" },				new cmd_t{ 5, (void*)cmd_setnick,			"ds",	"<id> <nick>"	});
+	cmds.add({ "setstatus" },			new cmd_t{ 3, (void*)cmd_setstatus,			"dd",	"<id> <status>"	});
+	cmds.add({ "rainbow", "makegay" },	new cmd_t{ 5, (void*)cmd_rainbow,			"d",	"<id>"			});
+	cmds.add({ "hideme" },				new cmd_t{ 4, (void*)cmd_hideme,			"",		""				});
+	cmds.add({ "notify" },				new cmd_t{ 1, (void*)cmd_notify,			"",		""				});
+	cmds.add({ "notify_set" },			new cmd_t{ 5, (void*)cmd_notify_set,		"*",	"<name>"		});
+	cmds.add({ "play" },				new cmd_t{ 5, (void*)cmd_audio_play,		"*",	"<name>"		});
+	cmds.add({ "play_url" },			new cmd_t{ 5, (void*)cmd_audio_play_url,	"*",	"<name>"		});
+	cmds.add({ "stop" },				new cmd_t{ 5, (void*)cmd_audio_stop,		"",		""				});
+	cmds.add({ "tts", "say" },			new cmd_t{ 5, (void*)cmd_tts_all,			"*",	"<text>"		});
+	cmds.add({ "nick" },				new cmd_t{ 1, (void*)cmd_nick,				"*",	"<nick>"		});
 
 	_printf("[info] init_commands(): %d commands loaded.", cmds.get_count());
 }
