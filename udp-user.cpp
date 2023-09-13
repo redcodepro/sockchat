@@ -136,7 +136,7 @@ void user_t::AddChat(color_t color, const char* fmt, ...)
 	packet.write<color_t>(color);
 	packet.write_string(buf);
 	packet.write<bool>(false); // notify
-	packet.write<bool>(false); // resend
+	packet.write<bool>(true); // resend
 	user_t::send(&packet);
 }
 
