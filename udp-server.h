@@ -11,6 +11,8 @@ private:
 	udpusers_t	m_users;
 	udpcrypt_t	m_crypt;
 	std::string	m_name;
+	std::string m_htHeader;
+	std::string m_htFooter;
 
 	void handle_event(ENetEvent* ev);
 public:
@@ -37,5 +39,13 @@ public:
 					return it.second;
 		return nullptr;
 	}
-	void on_udn() { m_lou = 0; }
+
+	void on_count();
+	void on_nick(user_t* user);
+	void on_hide(user_t* user);
+	void send_online(user_t* user);
+
+	std::string& get_header() { return m_htHeader; };
+	std::string& get_footer() { return m_htFooter; };
+	void online_foreach(void(*func)(user_t* user, const std::string& str, user_t* dst), user_t* dst, bool info = false);
 };

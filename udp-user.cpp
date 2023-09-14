@@ -12,7 +12,8 @@ void user_t::udn()
 	char buf[2048];
 	snprintf(buf, 2048, "{%06x}%s%s[%d]", (m_color & 0xFFFFFF), m_prefix.c_str(), m_nick.c_str(), m_id);
 	m_displayname = buf;
-	server.on_udn();
+
+	if (m_status != 0) server.on_nick(this);
 }
 
 void user_t::login(userdata_t* ud)
@@ -41,6 +42,9 @@ void user_t::login(userdata_t* ud)
 	user_t::send_auth(restore);
 
 	OnConnect();
+
+	server.on_count();
+	server.send_online(this);
 }
 
 void user_t::logout()
@@ -55,6 +59,8 @@ void user_t::logout()
 	user_t::udn();
 
 	user_t::send_auth("");
+
+	server.on_count();
 }
 
 void user_t::send(packet_t* packet)
@@ -158,7 +164,7 @@ void user_t::OnDisconnect()
 	if (m_status < 4)
 		chat.sendf(1, m_id, m_color, "%s {f7f488}отключился", nick());
 
-	server.on_udn();
+	server.on_hide(this);
 
 	_printf("[logout] user: %s[%d], ip: %s", m_nick.c_str(), m_id, m_addr.c_str());
 }
@@ -166,7 +172,10 @@ void user_t::OnDisconnect()
 void user_t::OnAuth(const std::string& key)
 {
 	//send_erase("");
-	send_hudtext("");
+	send_hudtext("Онлайн: /online\nОнлайн тут: в версии 1.6.5");
+
+	packet_t packet(id_ht_clear_all);
+	user_t::send(&packet);
 
 	if (key_is_valid(key))
 	{
@@ -185,6 +194,9 @@ void user_t::OnAuth(const std::string& key)
 	AddChat(0xFFFFFA66, "    \uf0a4    /register {ffffff}<nick> <pass> {fffa66}- для регистрации");
 	AddChat(0xFFFFFA66, "");
 	send_unreaded(1);
+	
+	server.on_count();
+	server.send_online(this);
 }
 
 void user_t::OnPacket(packet_t* packet)
@@ -218,9 +230,9 @@ void user_t::OnPacket(packet_t* packet)
 		{
 			bool b;
 			packet->read<bool>(b);
-			if (m_watching != b && m_status != 0)
-				server.on_udn();
+			bool u = m_watching != b && m_status;
 			m_watching = b;
+			if (u) server.on_nick(this);
 		}
 		break;
 	}

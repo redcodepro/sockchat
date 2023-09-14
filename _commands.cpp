@@ -346,6 +346,7 @@ void cmd_hideme(user_t* user)
 	user->m_hideme ^= 1;
 	user->AddChat(0xFFDB0000, ">> Неведимка %s.", user->m_hideme ? "включена" : "выключена");
 	user->udn();
+	server.on_count();
 }
 
 void cmd_chat_vip(user_t* user, const char* text)

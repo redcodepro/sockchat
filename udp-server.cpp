@@ -76,6 +76,7 @@ void udpserver_t::handle_event(ENetEvent* ev)
 				m_users.erase(ev->peer);
 				user->OnDisconnect();
 				delete user;
+				on_count();
 			}
 		}
 		break;
@@ -131,4 +132,78 @@ void udpserver_t::NotifyPlay(const std::string& url)
 	packet_t packet(_id_notify_play_url);
 	packet.write_string(url);
 	Broadcast(&packet);
+}
+
+void udpserver_t::on_count()
+{
+	int users = 0;
+	int total = 0;
+
+	for (auto& [peer, user] : m_users)
+	{
+		if (user->m_status)
+		{
+			if (user->m_hideme)
+				continue;
+
+			users += 1;
+		}
+		total += 1;
+	}
+
+	char buf[64];
+	snprintf(buf, 64, "\uf007 %d / %d | Онлайн:", users, total);
+	m_htHeader = buf;
+	
+	packet_t packet(id_ht_header_set);
+	packet.write_string(m_htHeader);
+	server.Broadcast(&packet);
+}
+
+void udpserver_t::on_nick(user_t* user)
+{
+	if (user->m_hideme) {
+		on_hide(user);
+		return;
+	}
+	std::string str;
+	format_nick(str, user);
+
+	packet_t packet(id_ht_entry_insert);
+	packet.write<id_t>(user->m_id);
+	packet.write_string(str);
+	server.Broadcast(&packet);
+}
+
+void udpserver_t::on_hide(user_t* user)
+{
+	packet_t packet(id_ht_entry_remove);
+	packet.write<id_t>(user->m_id);
+	server.Broadcast(&packet);
+}
+
+void udpserver_t::send_online(user_t* _dst)
+{
+	online_foreach([](user_t* user, const std::string& str, user_t* dst)
+	{
+		if (user->m_hideme)
+			return;
+		packet_t packet(id_ht_entry_insert);
+		packet.write<id_t>(user->m_id);
+		packet.write_string(str);
+		dst->send(&packet);
+	}, _dst);
+}
+
+void udpserver_t::online_foreach(void(*func)(user_t* user, const std::string& str, user_t* dst), user_t* dst, bool info)
+{
+	for (auto& [peer, user] : m_users)
+	{
+		if (user->m_status == 0)
+			continue;
+
+		std::string str;
+		format_nick(str, user, info ? dst : nullptr);
+		func(user, str, dst);
+	}
 }
