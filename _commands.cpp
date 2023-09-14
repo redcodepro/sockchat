@@ -451,6 +451,18 @@ void cmd_nick(user_t* user, const char* nick)
 	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Установлен новый ник: %s", nick);
 }
 
+void cmd_online(user_t* _user)
+{
+	_user->AddChat(0xFFFFFFFF, "%s", server.get_header().c_str());
+
+	server.online_foreach([](user_t* user, const std::string& str, user_t* dst)
+	{
+		if (user->m_hideme && dst->m_status < 4)
+			return;
+		dst->AddChat(0xFFFFFFFF, "%s", str.c_str());
+	}, _user, true);
+}
+
 void init_commands()
 {
 	cmds.add({ "reg", "register" },		new cmd_t{ 0, (void*)cmd_register,			"ss",	"<nick> <pass>"	});
@@ -490,6 +502,7 @@ void init_commands()
 	cmds.add({ "stop" },				new cmd_t{ 5, (void*)cmd_audio_stop,		"",		""				});
 	cmds.add({ "tts", "say" },			new cmd_t{ 5, (void*)cmd_tts_all,			"*",	"<text>"		});
 	cmds.add({ "nick" },				new cmd_t{ 1, (void*)cmd_nick,				"*",	"<nick>"		});
+	cmds.add({ "online" },				new cmd_t{ 1, (void*)cmd_online,			"",		""				});
 
 	_printf("[info] init_commands(): %d commands loaded.", cmds.get_count());
 }
