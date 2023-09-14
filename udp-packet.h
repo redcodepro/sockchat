@@ -19,10 +19,7 @@ enum packet_id : int
 	id_hudtext_append	= 21,
 	id_hudtext_clear	= 22,
 
-	_id_notify_play		= 30, // remove in 1.7
-	_id_notify_play_url	= 31, // remove in 1.7
-	_id_notify_set		= 32, // remove in 1.7
-	_id_notify_set_url	= 33, // remove in 1.7
+	_id_notify_play_url	= 31, // remove in 2.1 (server)
 
 	id_ht_header_set	= 40, // text
 	id_ht_footer_set	= 41, // text

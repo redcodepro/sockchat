@@ -86,7 +86,7 @@ void user_t::send_unreaded(int count)
 
 void user_t::send_notify()
 {
-	packet_t packet(_id_notify_play);
+	packet_t packet(id_notify);
 	user_t::send(&packet);
 }
 

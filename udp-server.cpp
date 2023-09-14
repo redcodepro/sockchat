@@ -139,13 +139,6 @@ void udpserver_t::SendPM(user_t* src, user_t* dst, const std::string& text)
 	dst->send_notify();
 }
 
-void udpserver_t::NotifySet(const std::string& url)
-{
-	packet_t packet(_id_notify_set_url);
-	packet.write_string(url);
-	Broadcast(&packet);
-}
-
 void udpserver_t::NotifyPlay(const std::string& url)
 {
 	packet_t packet(_id_notify_play_url);

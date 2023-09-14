@@ -1,7 +1,5 @@
-#include "sc_types.h"
+#include "main.h"
 #include "md5.h"
-#include <stdio.h>
-#include <stdarg.h>
 
 void _srand()
 {
@@ -27,15 +25,38 @@ std::string create_key(std::size_t length)
 {
 	std::string result;
 	_srand();
-	do
-	{
+	do {
 		char c = (char)(rand() & 0xFF);
-		if ((c >= '0' && c <= '9')
-			|| (c >= 'A' && c <= 'Z')
-			|| (c >= 'a' && c <= 'z'))
+		if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
 			result.push_back(c);
 	} while (result.size() != length);
 	return result;
+}
+
+bool key_is_valid(const std::string& key)
+{
+	if (key.size() == 0)
+		return false;
+
+	for (char c : key)
+		if (!((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')))
+			return false;
+	
+	return true;
+}
+
+std::string addr_ip(ENetAddress* addr)
+{
+	char ip[256];
+	enet_address_get_host_ip(addr, ip, 256);
+	return std::string((strncmp(ip, "::ffff:", 7) == 0) ? (ip + 7) : (ip));
+}
+
+const char* addr(ENetAddress* addr)
+{
+	static char buf[256];
+	snprintf(buf, 256, "%s:%hu", addr_ip(addr).c_str(), addr->port);
+	return buf;
 }
 
 char to_hex(char code)
@@ -123,4 +144,24 @@ void __printf_stdout(const char* fmt, ...)
 
 	fprintf(stdout, "\n");
 	fflush(stdout);
+}
+
+packet_t* create_audio_packet(packet_id id, const std::string& filename)
+{
+	std::size_t p = filename.find_last_of('/');
+	std::string f = (p == std::string::npos ? filename : filename.substr(p + 1)) + ".mp3";
+	std::string n = "/var/www/html/audio/" + f;
+
+	std::ifstream ifs(n, std::ios::binary);
+	std::ostringstream oss(std::ios::binary);
+	oss << ifs.rdbuf();
+	std::string data = oss.str();
+
+	if (data.size())
+	{
+		packet_t* packet = new packet_t(id);
+		packet->write_string(data);
+		return packet;
+	}
+	return nullptr;
 }

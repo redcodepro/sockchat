@@ -32,9 +32,7 @@ void packet_t::realloc(size_t _size)
 void packet_t::free_callback(void* data)
 {
 	ENetPacket* packet = reinterpret_cast<ENetPacket*>(data);
-	if (packet->data != nullptr
-	 && packet->flags & ENET_PACKET_FLAG_NO_ALLOCATE)
-		free(packet->data);
+	free(packet->data);
 }
 
 bool packet_t::read(void* dst, size_t n)
@@ -63,7 +61,7 @@ bool packet_t::read_string(std::string& val)
 
 void packet_t::write(const void* src, size_t n)
 {
-	if (size == -1)
+	if (size == (size_t)(-1))
 		return;
 
 	if ((pos + n) > size)

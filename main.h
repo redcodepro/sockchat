@@ -60,14 +60,9 @@ extern chat_handler_t chat;
 extern server_config_t cfg;
 
 std::string format_out(const std::string& in, bool remove_color = true);
-bool key_is_valid(const std::string& key);
 bool nick_is_valid(const std::string& nick, bool check_min = true);
-std::vector<std::string> split(const std::string& in, char delimiter, bool allow_empty = false);
 int string_replace_all(std::string& str, const char* from, const char* to);
-const char* addr(ENetAddress* addr);
-std::string addr_ip(ENetAddress* addr);
 void init_commands();
 std::string find_audio_url(const std::string& name);
-packet_t* create_audio_packet(packet_id id, const std::string& filename);
 
 #endif // !MAIN_H

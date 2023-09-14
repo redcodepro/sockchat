@@ -1,6 +1,4 @@
-#pragma once
-
-#include <string>
+#include "main.h"
 
 typedef unsigned int	id_t;
 typedef unsigned short	len_t;
@@ -12,11 +10,14 @@ static_assert(sizeof(color_t) == 4);
 
 void _srand();
 
-color_t create_color();
-
+color_t		create_color();
 std::string md5(std::string in);
 std::string create_key(std::size_t length);
+bool		key_is_valid(const std::string& key);
+std::string addr_ip(ENetAddress* addr);
+const char* addr(ENetAddress* addr);
 std::string urlencode(std::string in);
+packet_t*	create_audio_packet(packet_id id, const std::string& filename);
 
 typedef struct _server_config_t
 {

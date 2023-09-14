@@ -37,7 +37,6 @@ std::string format_out(const std::string& in, bool remove_color)
 
 	// filter: make smiles
 	const char* smiles[][2] = {
-
 		{":)", "\uf118"}, {">:(","\uf556"}, {":|", "\uf11a"}, {"(f)","\uf024"},
 		{";)", "\uf58c"}, {":(", "\uf119"}, {":D", "\uf599"}, {":'(","\uf5b4"},
 		{":o", "\uf5c2"}, {":p", "\uf58a"}, {"=)", "\uf581"}, {"xD", "\uf586"},
@@ -111,17 +110,6 @@ void udpserver_t::send_online()
 	Broadcast(&packet, 0);
 }
 
-bool key_is_valid(const std::string& key)
-{
-	if (key.size() == 0)
-		return false;
-
-	for (char c : key)
-		if (!((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')))
-			return false;
-	return true;
-}
-
 bool nick_is_valid(const std::string& nick, bool check_min)
 {
 	if ((nick.size() < 5 && check_min) || nick.size() > 24)
@@ -131,28 +119,6 @@ bool nick_is_valid(const std::string& nick, bool check_min)
 		if (!((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')))
 			return false;
 	return true;
-}
-
-std::vector<std::string> split(const std::string& in, char delimiter, bool allow_empty)
-{
-	std::vector<std::string> out;
-	size_t prev_pos = 0, pos = 0;
-
-	do
-	{
-		pos = in.find(delimiter, pos);
-
-		std::string res = in.substr(prev_pos, pos - prev_pos);
-
-		if (allow_empty || res.size())
-			out.push_back(res);
-
-		if (pos != std::string::npos)
-			prev_pos = ++pos;
-
-	} while (pos != std::string::npos);
-
-	return out;
 }
 
 int string_replace_all(std::string& str, const char* from, const char* to)
@@ -170,20 +136,6 @@ int string_replace_all(std::string& str, const char* from, const char* to)
 	return count;
 };
 
-const char* addr(ENetAddress* addr)
-{
-	static char buf[256];
-	snprintf(buf, 256, "%s:%hu", addr_ip(addr).c_str(), addr->port);
-	return buf;
-}
-
-std::string addr_ip(ENetAddress* addr)
-{
-	char ip[256];
-	enet_address_get_host_ip(addr, ip, 256);
-	return std::string((strncmp(ip, "::ffff:", 7) == 0) ? (ip + 7) : (ip));
-}
-
 std::string find_audio_url(const std::string& name)
 {
 	std::size_t p = name.find_last_of('/');
@@ -195,23 +147,4 @@ std::string find_audio_url(const std::string& name)
 	if (!(s.st_mode & S_IFREG))
 		return "";
 	return cfg.audio_folder + f;
-}
-
-packet_t* create_audio_packet(packet_id id, const std::string& filename)
-{
-	std::size_t p = filename.find_last_of('/');
-	std::string f = (p == std::string::npos ? filename : filename.substr(p + 1)) + ".mp3";
-	std::string n = "/var/www/html/audio/" + f;
-
-	std::ifstream ifs(n, std::ios::binary);
-	std::ostringstream oss(std::ios::binary);
-	oss << ifs.rdbuf();
-	std::string data = oss.str();
-	
-	if (data.empty())
-		return nullptr;
-
-	packet_t* packet = new packet_t(id);
-	packet->write_string(data);
-	return packet;
 }
