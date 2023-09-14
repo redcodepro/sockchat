@@ -15,17 +15,11 @@ enum packet_id : int
 	id_user_looks		= 12,
 	id_user_types		= 13,
 
-	id_hudtext_init		= 20,
-	id_hudtext_append	= 21,
-	id_hudtext_clear	= 22,
+	id_hudtext_init		= 20, // remove in 2.1
+	id_hudtext_append	= 21, // remove in 2.1
+	id_hudtext_clear	= 22, // remove in 2.1
 
-	_id_notify_play_url	= 31, // remove in 2.1 (server)
-
-	id_ht_header_set	= 40, // text
-	id_ht_footer_set	= 41, // text
-	id_ht_entry_insert	= 42, // id, text
-	id_ht_entry_remove	= 43, // id
-	id_ht_clear_all		= 44,
+	_id_notify_play_url	= 31, // remove in 2.1
 
 	id_notify			= 50,
 	id_notify_set		= 51, // audio packet
@@ -33,6 +27,12 @@ enum packet_id : int
 	id_audio_play		= 53, // audio packet
 	id_audio_play_url	= 54, // url
 	id_audio_stop		= 55,
+
+	id_ht_header_set	= 60, // text
+	id_ht_footer_set	= 61, // text
+	id_ht_entry_insert	= 62, // id, text
+	id_ht_entry_remove	= 63, // id
+	id_ht_clear_all		= 64,
 };
 
 static_assert(sizeof(packet_id) == sizeof(int));

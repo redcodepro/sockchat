@@ -17,7 +17,6 @@ bool		key_is_valid(const std::string& key);
 std::string addr_ip(ENetAddress* addr);
 const char* addr(ENetAddress* addr);
 std::string urlencode(std::string in);
-packet_t*	create_audio_packet(packet_id id, const std::string& filename);
 
 typedef struct _server_config_t
 {

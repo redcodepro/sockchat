@@ -64,5 +64,6 @@ bool nick_is_valid(const std::string& nick, bool check_min = true);
 int string_replace_all(std::string& str, const char* from, const char* to);
 void init_commands();
 std::string find_audio_url(const std::string& name);
+packet_t* create_audio_packet(packet_id id, const std::string& filename);
 
 #endif // !MAIN_H
