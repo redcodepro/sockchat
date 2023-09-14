@@ -22,7 +22,7 @@ public:
 
 	//////////////////////////////////////////
 
-	void Broadcast(packet_t* packet, int level = 0);
+	void Broadcast(packet_t* packet, int level = 0, enet_uint8 channel = 0);
 	void KickUser(user_t* user, bool send_closed = true);
 	void MakeBan(user_t* user);
 	void MakeBanIP(user_t* user);

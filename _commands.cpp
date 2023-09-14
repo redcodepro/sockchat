@@ -377,7 +377,9 @@ void cmd_notify_set(user_t* user, const char* name)
 		return;
 	}
 
-	server.Broadcast(packet);
+	server.Broadcast(packet, 0, 1);
+	delete packet;
+
 	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Установлен звук уведомлений: {ffc800}\uf1c7 %s.mp3", name);
 }
 
@@ -390,7 +392,9 @@ void cmd_audio_play(user_t* user, const char* name)
 		return;
 	}
 
-	server.Broadcast(packet);
+	server.Broadcast(packet, 0, 1);
+	delete packet;
+
 	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Проигрываю: {ffc800}\uf1c7 %s.mp3", name);
 }
 
@@ -410,7 +414,7 @@ void cmd_audio_play_url(user_t* user, const char* name)
 void cmd_audio_stop(user_t* user)
 {
 	packet_t packet(id_audio_stop);
-	server.Broadcast(&packet, 0);
+	server.Broadcast(&packet);
 }
 
 void cmd_tts_all(user_t* user, const char* text)

@@ -92,21 +92,12 @@ void udpserver_t::handle_event(ENetEvent* ev)
 	}
 }
 
-void udpserver_t::Broadcast(packet_t* packet, int level)
+void udpserver_t::Broadcast(packet_t* packet, int level, enet_uint8 channel)
 {
 	m_crypt.encrypt(packet);
-
-	ENetPacket* ep = packet->get();
-	for (auto& it : m_users)
-	{
-		peer_t peer = it.first;
-		user_t* user = it.second;
-
-		if (user->m_status < level)
-			continue;
-
-		enet_peer_send(peer, 0, ep);
-	}
+	for (auto& [peer, user] : m_users)
+		if (user->m_status >= level)
+			enet_peer_send(peer, channel, packet->get());
 }
 
 void udpserver_t::KickUser(user_t* user, bool send_closed)
