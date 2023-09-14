@@ -34,8 +34,6 @@ void udpserver_t::exec()
 		}
 
 		handle_event(&ev);
-
-		send_online(); // ????
 	}
 
 	_printf("[info] Server stopped");
@@ -89,8 +87,6 @@ void udpserver_t::handle_event(ENetEvent* ev)
 				packet_t packet(ev->packet);
 				user->OnPacket(&packet);
 			}
-
-			// enet_packet_destroy(ev->packet);
 		}
 		break;
 	}

@@ -65,5 +65,6 @@ int string_replace_all(std::string& str, const char* from, const char* to);
 void init_commands();
 std::string find_audio_url(const std::string& name);
 packet_t* create_audio_packet(packet_id id, const std::string& filename);
+void format_nick(std::string& out, user_t* user, user_t* target = nullptr);
 
 #endif // !MAIN_H

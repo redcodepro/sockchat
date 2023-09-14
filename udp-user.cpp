@@ -291,4 +291,5 @@ void user_t::set_status(int status)
 {
 	m_status = status;
 	db.set_status(m_id, m_status);
+	user_t::udn();
 }

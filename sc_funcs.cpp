@@ -165,3 +165,19 @@ packet_t* create_audio_packet(packet_id id, const std::string& filename)
 	}
 	return nullptr;
 }
+
+void format_nick(std::string& out, user_t* user, user_t* target)
+{
+	out = user->nick_c();
+	out += " (";
+	out += std::to_string(user->m_status);
+	out += ")";
+
+	bool info = target && target->m_status > 3;
+
+	if (user->m_watching && (info || user->m_status < 4))
+		out += " \uf11a";
+
+	if (user->m_hideme && info)
+		out += " \uf070";
+}

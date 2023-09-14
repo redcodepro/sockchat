@@ -52,64 +52,6 @@ std::string format_out(const std::string& in, bool remove_color)
 	return result;
 }
 
-void udpserver_t::send_online()
-{
-	time_t _time = time(0);
-
-	static time_t _prev = 0;
-	if (_prev != _time)
-	{
-		for (auto& [peer, user] : m_users)
-		{
-			if (user->m_rainbow)
-			{
-				user->m_color = create_color();
-				user->udn();
-			}
-		}
-		_prev = _time;
-	}
-
-	// update period: 30s or onchange
-	if ((_time - m_lou) < 30)
-		return;
-	m_lou = _time;
-
-	char buf[256];
-	int users = 0;
-	int total = 0;
-	std::string online;
-
-	for (auto& [peer, user] : m_users)
-	{
-		if (user->m_status == 0)
-		{
-			// nope
-		}
-		else
-		{
-			if (user->m_hideme)
-				continue;
-			
-			sprintf(buf, "\n%s (%d) ", user->nick_c(), user->m_status);
-			online += buf;
-
-			if (user->m_status < 4 && user->m_watching)
-				online += "\uf11a";
-			
-			users += 1;
-		}
-		total += 1;
-	}
-
-	sprintf(buf, "\uf007 %d / %d | Онлайн:", users, total);
-	online.insert(0, buf);
-
-	packet_t packet(id_hudtext_init);
-	packet.write_string(online);
-	Broadcast(&packet, 0);
-}
-
 bool nick_is_valid(const std::string& nick, bool check_min)
 {
 	if ((nick.size() < 5 && check_min) || nick.size() > 24)
