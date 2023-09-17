@@ -34,6 +34,19 @@ void udpserver_t::exec()
 		}
 
 		handle_event(&ev);
+
+		static time_t prev = 0;
+		time_t now = time(0);
+		if (prev != now)
+		{
+			for (auto& [peer, user] : m_users)
+				if (user->m_rainbow)
+				{
+					user->m_color = create_color();
+					user->udn();
+				}
+			prev = now;
+		}
 	}
 
 	_printf("[info] Server stopped");
