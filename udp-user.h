@@ -8,7 +8,7 @@ public:
 	bool		m_watching;
 	bool		m_rainbow;
 	bool		m_hideme;
-	bool		m_notify;
+	bool		m_motd;
 	std::string m_displayname;
 
 	int			m_id;

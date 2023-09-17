@@ -393,7 +393,7 @@ void cmd_audio_play(user_t* user, const char* name)
 		return;
 	}
 
-	server.Broadcast(packet, 0, 1);
+	server.Broadcast(packet, 1, 1);
 	delete packet;
 
 	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Проигрываю: {ffc800}\uf1c7 %s.mp3", name);

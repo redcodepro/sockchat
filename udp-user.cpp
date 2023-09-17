@@ -1,7 +1,7 @@
 ﻿#include "main.h" // ÙŦF-8
 
 user_t::user_t(peer_t peer)
-	: m_peer(peer), m_watching(false), m_rainbow(false), m_hideme(false), m_notify(false),
+	: m_peer(peer), m_watching(false), m_rainbow(false), m_hideme(false), m_motd(false),
 	m_displayname("{ffffff}[-1]"), m_id(-1), m_status(0), m_color(-1), m_pm_id(-1), m_room_id(-1)
 {
 	m_addr = addr(&peer->address);
@@ -130,11 +130,8 @@ void user_t::AddChat(color_t color, const char* fmt, ...)
 	
 	va_list va;
 	va_start(va, fmt);
-	int count = vsnprintf(buf, 512, fmt, va);
+	vsnprintf(buf, 512, fmt, va);
 	va_end(va);
-	
-	if (count < 0) return;
-	if (count > 512) count = 512;
 	
 	packet_t packet(id_chat_message);
 	packet.write<id_t>(0);
@@ -187,13 +184,7 @@ void user_t::OnAuth(const std::string& key)
 		}
 	}
 
-	AddChat(0xFFFFFA66, "");
-	AddChat(0xFFFFFA66, "\uf0eb {ffffff}Подсказка:");
-	AddChat(0xFFFFFA66, "    Для входа используйте команды:");
-	AddChat(0xFFFFFA66, "    \uf0a4    /auth {ffffff}<nick> <pass> {fffa66}- для авторизации");
-	AddChat(0xFFFFFA66, "    \uf0a4    /register {ffffff}<nick> <pass> {fffa66}- для регистрации");
-	AddChat(0xFFFFFA66, "");
-	send_unreaded(1);
+	send_unreaded(1); // bait na click!!!
 	
 	server.on_count();
 	server.send_online(this);
@@ -233,6 +224,16 @@ void user_t::OnPacket(packet_t* packet)
 			bool u = m_watching != b && m_status;
 			m_watching = b;
 			if (u) server.on_nick(this);
+			if (b && !m_motd && !m_status)
+			{
+				AddChat(0xFFFFFA66, "");
+				AddChat(0xFFFFFA66, "\uf0eb {ffffff}Подсказка:");
+				AddChat(0xFFFFFA66, "    Для входа используйте команды:");
+				AddChat(0xFFFFFA66, "    \uf0a4    /auth {ffffff}<nick> <pass> {fffa66}- для авторизации");
+				AddChat(0xFFFFFA66, "    \uf0a4    /register {ffffff}<nick> <pass> {fffa66}- для регистрации");
+				AddChat(0xFFFFFA66, "");
+				m_motd = true;
+			}
 		}
 		break;
 	}
