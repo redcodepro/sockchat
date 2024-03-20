@@ -79,9 +79,8 @@ void cmd_ping(user_t* user)
 
 void cmd_time(user_t* user)
 {
-	time_t time_ = time(0);
 	struct tm tm_;
-	localtime_r(&time_, &tm_);
+	fill_timeinfo(&tm_);
 	user->AddChat(0xFFF7F488, "Время: {ffffff}%02d:%02d:%02d", tm_.tm_hour, tm_.tm_min, tm_.tm_sec);
 }
 
@@ -369,68 +368,6 @@ void cmd_notify(user_t* user)
 	user->send_notify();
 }
 
-void cmd_notify_set(user_t* user, const char* name)
-{
-	packet_t* packet = create_audio_packet(id_notify_set, name);
-	if (packet == nullptr)
-	{
-		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Файл не существует!");
-		return;
-	}
-
-	server.Broadcast(packet, 0, 1);
-	delete packet;
-
-	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Установлен звук уведомлений: {ffc800}\uf1c7 %s.mp3", name);
-}
-
-void cmd_audio_play(user_t* user, const char* name)
-{
-	packet_t* packet = create_audio_packet(id_audio_play, name);
-	if (packet == nullptr)
-	{
-		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Файл не существует!");
-		return;
-	}
-
-	server.Broadcast(packet, 1, 1);
-	delete packet;
-
-	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Проигрываю: {ffc800}\uf1c7 %s.mp3", name);
-}
-
-void cmd_audio_play_url(user_t* user, const char* name)
-{
-	std::string url = find_audio_url(name);
-	if (url.empty())
-	{
-		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Файл не существует!");
-		return;
-	}
-
-	server.NotifyPlay(url);
-	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Проигрываю: {0077e5}\"%s\"", url.c_str());
-}
-
-void cmd_audio_stop(user_t* user)
-{
-	packet_t packet(id_audio_stop);
-	server.Broadcast(&packet);
-}
-
-void cmd_tts_all(user_t* user, const char* text)
-{
-	std::string url = "https://tts.voicetech.yandex.net/generate"
-		"?key=6372dda5-9674-4413-85ff-e9d0eb2f99a7"
-		"&format=mp3"
-		"&emotion=neutral"
-		"&speaker=voicesearch"
-		"&text=";
-	url += urlencode(text);
-	server.NotifyPlay(url);
-	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Проигрываю: {ffc800}YTTS: \"%s\"", text);
-}
-
 void cmd_nick(user_t* user, const char* nick)
 {
 	if (!nick_is_valid(nick, true))
@@ -496,11 +433,6 @@ void init_commands()
 	cmds.add({ "rainbow", "makegay" },	new cmd_t{ 5, (void*)cmd_rainbow,			"d",	"<id>"			});
 	cmds.add({ "hideme" },				new cmd_t{ 4, (void*)cmd_hideme,			"",		""				});
 	cmds.add({ "notify" },				new cmd_t{ 1, (void*)cmd_notify,			"",		""				});
-	cmds.add({ "notify_set" },			new cmd_t{ 5, (void*)cmd_notify_set,		"*",	"<name>"		});
-	cmds.add({ "play" },				new cmd_t{ 5, (void*)cmd_audio_play,		"*",	"<name>"		});
-	cmds.add({ "play_url" },			new cmd_t{ 5, (void*)cmd_audio_play_url,	"*",	"<name>"		});
-	cmds.add({ "stop" },				new cmd_t{ 5, (void*)cmd_audio_stop,		"",		""				});
-	cmds.add({ "tts", "say" },			new cmd_t{ 5, (void*)cmd_tts_all,			"*",	"<text>"		});
 	cmds.add({ "nick" },				new cmd_t{ 1, (void*)cmd_nick,				"*",	"<nick>"		});
 	cmds.add({ "online" },				new cmd_t{ 1, (void*)cmd_online,			"",		""				});
 

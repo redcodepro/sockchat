@@ -24,7 +24,6 @@ typedef struct _server_config_t
 	int			port = 8000;
 	int			slots = 500;
 	std::string logfile = "";
-	std::string audio_folder = "http://192.168.8.128/audio/";
 
 	std::string mysql_address	= "localhost";
 	std::string mysql_user		= "sockchat";
@@ -38,3 +37,4 @@ typedef struct _server_config_t
 
 bool redirect_stdout(const char* filename);
 void __printf_stdout(const char* fmt, ...);
+void fill_timeinfo(tm* tm);

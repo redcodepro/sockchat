@@ -29,7 +29,6 @@ public:
 	void MakeBan(user_t* user);
 	void MakeBanIP(user_t* user);
 	void SendPM(user_t* src, user_t* dst, const std::string& text);
-	void NotifyPlay(const std::string& url);
 
 	user_t* find_user(int id)
 	{

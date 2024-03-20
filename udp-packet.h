@@ -4,29 +4,18 @@ enum packet_id : int
 {
 	id_chat_init		= 0, // seed, name
 	id_chat_auth		= 1, // ver, auth
-	id_chat_event_		= 2, // deprecated
-	id_chat_message		= 3,
-	id_chat_unreaded	= 4,
-	id_chat_erase		= 5,
-	id_chat_erase_id	= 6,
+	id_chat_print		= 2, // color, text
+	id_chat_message		= 3, // id, time, color, text, notify, resend
+	id_chat_unreaded	= 4, // count
+	id_chat_erase		= 5, // text
+	id_chat_erase_id	= 6, // user id
 
 	id_user_auth		= 10,
 	id_user_input		= 11, // input
-	id_user_looks		= 12,
+	id_user_looks		= 12, // state
 	id_user_types		= 13,
 
-	id_hudtext_init		= 20, // remove in 2.1
-	id_hudtext_append	= 21, // remove in 2.1
-	id_hudtext_clear	= 22, // remove in 2.1
-
-	_id_notify_play_url	= 31, // remove in 2.1
-
 	id_notify			= 50,
-	id_notify_set		= 51, // audio packet
-	id_notify_set_url	= 52, // url
-	id_audio_play		= 53, // audio packet
-	id_audio_play_url	= 54, // url
-	id_audio_stop		= 55,
 
 	id_ht_header_set	= 60, // text
 	id_ht_footer_set	= 61, // text

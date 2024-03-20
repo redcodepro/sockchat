@@ -1,4 +1,4 @@
-#include "main.h"
+#include "main.h" // ÙŦF-8
 #include "md5.h"
 
 void _srand()
@@ -114,13 +114,6 @@ void server_config_t::load_cmdline(int argc, char** argv)
 
 			this->sqlite_filename = argv[++i];
 		}
-		else if (v == "-audio")
-		{
-			if ((i + 1) >= argc)
-				break;
-
-			this->audio_folder = argv[++i];
-		}
 	}
 }
 
@@ -133,7 +126,7 @@ void __printf_stdout(const char* fmt, ...)
 {
 	time_t time_ = time(0);
 	struct tm tm_;
-	localtime_r(&time_, &tm_);
+	fill_timeinfo(&tm_);
 
 	fprintf(stdout, "[%02d:%02d:%02d] ", tm_.tm_hour, tm_.tm_min, tm_.tm_sec);
 
@@ -146,24 +139,14 @@ void __printf_stdout(const char* fmt, ...)
 	fflush(stdout);
 }
 
-packet_t* create_audio_packet(packet_id id, const std::string& filename)
+void fill_timeinfo(tm* tm)
 {
-	std::size_t p = filename.find_last_of('/');
-	std::string f = (p == std::string::npos ? filename : filename.substr(p + 1)) + ".mp3";
-	std::string n = "/var/www/html/audio/" + f;
-
-	std::ifstream ifs(n, std::ios::binary);
-	std::ostringstream oss(std::ios::binary);
-	oss << ifs.rdbuf();
-	std::string data = oss.str();
-
-	if (data.size())
-	{
-		packet_t* packet = new packet_t(id);
-		packet->write_string(data);
-		return packet;
-	}
-	return nullptr;
+	time_t time_ = time(NULL);
+#ifdef _WINDOWS
+	localtime_s(tm, &time_);
+#else
+	localtime_r(&time_, tm);
+#endif
 }
 
 void format_nick(std::string& out, user_t* user, user_t* target)
@@ -181,3 +164,81 @@ void format_nick(std::string& out, user_t* user, user_t* target)
 	if (user->m_hideme && info)
 		out += " \uf070";
 }
+
+void trim(std::string& s)
+{
+	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) { return !std::isspace(ch); }));
+	s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), s.end());
+}
+
+std::string format_out(std::string_view in, bool remove_color)
+{
+	std::string result;
+
+	// filter: size, bad chars
+	for (auto &c : in)
+	{
+		if ((uint8_t)c < 32)
+			continue;
+		
+		result += c;
+		
+		if (result.size() > 255)
+			break;
+	}
+
+	// filter: trim
+	trim(result);
+
+	// filter: color
+	while (remove_color)
+	{
+		static std::regex tag_regex("\\{[A-Fa-f0-9]{6}\\}");
+		std::string out = std::regex_replace(result, tag_regex, "");
+		if (out.size() == result.size())
+			break;
+		result = out;
+	}
+
+	// filter: make smiles
+	const char* smiles[][2] = {
+		{":)", "\uf118"}, {">:(","\uf556"}, {":|", "\uf11a"}, {"(f)","\uf024"},
+		{";)", "\uf58c"}, {":(", "\uf119"}, {":D", "\uf599"}, {":'(","\uf5b4"},
+		{":o", "\uf5c2"}, {":p", "\uf58a"}, {"=)", "\uf581"}, {"xD", "\uf586"},
+		{"(r)","\uf25d"}, {"(c)","\uf1f9"}, {"(+)","\uf164"}, {"(-)","\uf165"},
+		{"(*)","\uf005"}, {"($)","\uf3d1"}, {"(%)","\uf3a5"}, {"<3", "\uf004"},
+		{"0_0","\uf579"}, {":*", "\uf598"}, {"(t)","\uf2ed"}, {":P", "\uf589"},
+		{"YoY","\uf5b3"}, {":B", "\uf57f"},
+	};
+
+	for (auto it : smiles)
+		string_replace_all(result, it[0], it[1]);
+
+	return result;
+}
+
+bool nick_is_valid(std::string_view nick, bool check_min)
+{
+	if ((nick.size() < 5 && check_min) || nick.size() > 24)
+		return false;
+
+	for (char c : nick)
+		if (!((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')))
+			return false;
+	return true;
+}
+
+int string_replace_all(std::string& str, const char* from, const char* to)
+{
+	int count = 0;
+	size_t start_pos = 0;
+	size_t len_from = strlen(from);
+	size_t len_to = strlen(to);
+	while ((start_pos = str.find(from, start_pos)) != std::string::npos)
+	{
+		str.replace(start_pos, len_from, to);
+		start_pos += len_to;
+		count++;
+	}
+	return count;
+};

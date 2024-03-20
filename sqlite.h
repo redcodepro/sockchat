@@ -1,8 +1,6 @@
 #include "main.h"
 
-#if (MYSQL_ENABLED == 0)
-
-#include "sqlite3/sqlite3.h"
+#include <sqlite3.h>
 
 class sqlite_t
 {
@@ -52,5 +50,3 @@ public:
 };
 
 typedef sqlite_t database_t;
-
-#endif

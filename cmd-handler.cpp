@@ -16,6 +16,9 @@ private:
 
 	void _init(const char* desc)
 	{
+		memset(sscanf_args, 0, sizeof(sscanf_args));
+		memset(&args, 0, sizeof(args));
+
 		args_count = strlen(desc);
 
 		for (size_t i = 0; i < args_count; ++i)
@@ -67,7 +70,7 @@ private:
 		return true;
 	}
 public:
-	va_runner(const char* desc) : sscanf_args({0,0,0,0}), args({0,0,0,0}), args_count(0) { _init(desc); }
+	va_runner(const char* desc) : args_count(0) { _init(desc); }
 	~va_runner() { _free(); }
 	
 	bool _run(const void* func, user_t* user, const char* args)

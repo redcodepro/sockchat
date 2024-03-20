@@ -2,21 +2,27 @@
 #define MAIN_H
 
 #include <string>
+#include <deque>
 #include <mutex>
 #include <regex>
 #include <random>
 #include <unordered_map>
 #include <fstream>
 
-#include <sys/time.h>
+#include <time.h>
 #include <sys/stat.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <memory.h>
 
+#ifdef _WINDOWS
+#	include <io.h>
+#else
+#	include <unistd.h>
+#endif
+
 #define ENET_STATIC
-#include "enet/enet.h"
+#include <enet.h>
 
 #include "sc_types.h"
 
@@ -59,12 +65,10 @@ extern cmd_handler_t cmds;
 extern chat_handler_t chat;
 extern server_config_t cfg;
 
-std::string format_out(const std::string& in, bool remove_color = true);
-bool nick_is_valid(const std::string& nick, bool check_min = true);
+std::string format_out(std::string_view in, bool remove_color = true);
+bool nick_is_valid(std::string_view nick, bool check_min = true);
 int string_replace_all(std::string& str, const char* from, const char* to);
 void init_commands();
-std::string find_audio_url(const std::string& name);
-packet_t* create_audio_packet(packet_id id, const std::string& filename);
 void format_nick(std::string& out, user_t* user, user_t* target = nullptr);
 
 #endif // !MAIN_H

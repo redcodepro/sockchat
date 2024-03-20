@@ -1,0 +1,3 @@
+[submodule "thirdparty/enet"]
+	path = thirdparty/enet
+	url = https://github.com/zpl-c/enet.git

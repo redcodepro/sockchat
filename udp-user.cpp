@@ -76,13 +76,6 @@ void user_t::send_auth(const std::string& auth)
 	user_t::send(&packet);
 }
 
-void user_t::send_hudtext(const std::string& text)
-{
-	packet_t packet(id_hudtext_init);
-	packet.write_string(text);
-	user_t::send(&packet);
-}
-
 void user_t::send_unreaded(int count)
 {
 	packet_t packet(id_chat_unreaded);
@@ -93,20 +86,6 @@ void user_t::send_unreaded(int count)
 void user_t::send_notify()
 {
 	packet_t packet(id_notify);
-	user_t::send(&packet);
-}
-
-void user_t::send_notify_set(const std::string& url)
-{
-	packet_t packet(id_notify_set_url);
-	packet.write_string(url);
-	user_t::send(&packet);
-}
-
-void user_t::send_notify_play(const std::string& url)
-{
-	packet_t packet(_id_notify_play_url);
-	packet.write_string(url);
 	user_t::send(&packet);
 }
 
@@ -168,9 +147,6 @@ void user_t::OnDisconnect()
 
 void user_t::OnAuth(const std::string& key)
 {
-	//send_erase("");
-	send_hudtext("Онлайн: /online\nОнлайн тут: в версии 1.6.5");
-
 	packet_t packet(id_ht_clear_all);
 	user_t::send(&packet);
 
@@ -184,7 +160,7 @@ void user_t::OnAuth(const std::string& key)
 		}
 	}
 
-	send_unreaded(1); // bait na click!!!
+	send_unreaded(0);
 	
 	server.on_count();
 	server.send_online(this);

@@ -31,12 +31,9 @@ public:
 	void send_auth(const std::string& auth);
 	void send_erase(const std::string& text);
 	void send_erase(id_t id);
-	void send_hudtext(const std::string& text);
 	void send_unreaded(int count);
 
 	void send_notify();
-	void send_notify_set(const std::string& url);
-	void send_notify_play(const std::string& url);
 
 	void AddChat(color_t color, const char* fmt, ...);
 
